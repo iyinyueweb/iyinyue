@@ -173,7 +173,8 @@ def tag_music(request):
 
 # 批量添加音乐
 def init_music(request):
-    path = 'G:/iyinyue/iyinyue/static/iyinyue/mp3'
+    project_path = 'F:/project/iyinyue'
+    path = project_path + '/static/iyinyue/mp3'
     all_files = filedir.print_path(path)
     for file in all_files:
         if 'mp3' not in file:
@@ -199,17 +200,20 @@ def init_music(request):
                 music.year = str(value).strip()
             if 'comment' == k:
                 music.comment = str(value).strip()
-        music.path = file.replace('G:/iyinyue/iyinyue/', 'http://127.0.0.1:8000/')
+        music.path = file.replace(project_path, 'http://127.0.0.1:8000')
         music.save()
 
 
 # 个性化音乐推荐
+# method = POST
 def recommend(request):
+
     return None
 
 
 # 根据风格类型来获取音乐列表
 def get_music_by_genre(request):
+
     return None
 
 if __name__ == '__main__':
