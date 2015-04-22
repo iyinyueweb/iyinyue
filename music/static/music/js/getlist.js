@@ -79,7 +79,7 @@ function plus_to_list(music_id){
         data:{
             music_id: music_id,
             user_name: $.cookie('UserName'),
-            list_id: 7
+            list_id: 1
         },
         async:false,
         success: function(data){

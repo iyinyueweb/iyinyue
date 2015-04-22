@@ -1,7 +1,5 @@
 from django.http import *
 from user.models import *
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.utils import timezone
 import json
 from iyinyue.utils import filedir, mp3reader
@@ -177,9 +175,16 @@ def init_music(request):
     path = project_path + '/static/iyinyue/mp3'
     all_files = filedir.print_path(path)
     for file in all_files:
-        if 'mp3' not in file:
+
+        if '.mp3' not in file:
             continue
         try:
+            music_category = file.split('/')[-2]
+            category = MusicCategory.objects.filter(music_category=music_category)
+            if not category.exists():
+                category = MusicCategory()
+                category.music_category = music_category
+                category.save()
             info = mp3reader.get_mp3_info(file)
         except mutagen.mp3.HeaderNotFoundError:
             continue
@@ -187,7 +192,7 @@ def init_music(request):
         print(info)
         for k, v in info.items():
             for va in v:
-                value = va+' '
+                value = va + ' '
             if 'title' == k:
                 music.song_name = str(value).strip()
             if 'artist' == k:
@@ -202,6 +207,8 @@ def init_music(request):
                 music.comment = str(value).strip()
         music.path = file.replace(project_path, 'http://127.0.0.1:8000')
         music.save()
+        music.category.add(category[0])
+        music.save()
 
 
 # 个性化音乐推荐
@@ -212,8 +219,26 @@ def recommend(request):
 
 
 # 根据风格类型来获取音乐列表
+# GET
 def get_music_by_genre(request):
-
+    if request.method == 'GET':
+        try:
+            print(request.GET.get('genres', None))
+            musics = Music.objects.filter(genre=request.GET.get('genres', None))[0:19]
+            print(musics.count())
+        except(Music.DoesNotExist, IUser.DoesNotExist):
+            return HttpResponse('failed')
+        play_list_json = []
+        for music in musics:
+            music_json = {
+                'id': music.id,
+                'title': music.song_name,
+                'artist': music.artist,
+                'mp3': music.path,
+                'cover': 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+            }
+            play_list_json.append(music_json)
+        return HttpResponse(json.dumps(play_list_json), content_type='application/json')
     return None
 
 if __name__ == '__main__':
