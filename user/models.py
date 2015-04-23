@@ -7,7 +7,7 @@ class MusicCategory(models.Model):
     music_category = models.CharField(max_length=100)
 
 
-# 音乐表
+# 歌曲信息表
 class Music(models.Model):
     song_name = models.CharField(max_length=100)  # 歌曲名
     album = models.CharField(max_length=100, blank=True, null=True)  # 专辑
@@ -62,6 +62,14 @@ class IUser(models.Model):
 
     def __str__(self):
         return self.user_name
+
+
+# 用户对歌曲评论表
+class Comment(models.Model):
+    comment_user = models.ForeignKey(IUser, blank=True, null=True, related_name='comment_user')  # 评论的用户
+    comment_time = models.DateTimeField('comment_time', blank=True, null=True, default=timezone.now())  # 评论的时间
+    comment_content = models.CharField(max_length=10000)  # 评论内容
+    comment_music = models.ForeignKey(Music, blank=True, null=True, related_name='comment_music')  # 目标歌曲
 
 
 # 推荐的项目

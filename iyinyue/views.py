@@ -8,7 +8,7 @@ def index(request):
 
 
 def genres(request):
-    return render_to_response('genres.html', RequestContext(request, {}))
+    return render_to_response('music/genres.html', RequestContext(request, {}))
 
 
 def listen(request):

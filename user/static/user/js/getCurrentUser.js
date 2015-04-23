@@ -18,7 +18,7 @@ $(function () {
             }
         });
 
-        $('.dropdown .bg').append(
+        $('.dropdown .bg ').append(
             '<span class="thumb-sm avatar pull-right m-t-n-sm m-b-n-sm m-l-sm">'+
             '                <img src="/static/iyinyue/images/a0.png" alt="...">'+
             '              </span>'+ user_info['user_name']+

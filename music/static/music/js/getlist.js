@@ -52,7 +52,7 @@ $(document).ready(function(){
 
 /**
  * 下载音乐操作
- * @param music_id：当前音乐id
+ * @param music_id 当前音乐id
  */
 function download_music(music_id){
     $.ajax({

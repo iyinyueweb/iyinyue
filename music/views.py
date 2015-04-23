@@ -175,13 +175,14 @@ def init_music(request):
     path = project_path + '/static/iyinyue/mp3'
     all_files = filedir.print_path(path)
     for file in all_files:
-
+        flag = True
         if '.mp3' not in file:
             continue
         try:
             music_category = file.split('/')[-2]
             category = MusicCategory.objects.filter(music_category=music_category)
             if not category.exists():
+                flag = False
                 category = MusicCategory()
                 category.music_category = music_category
                 category.save()
@@ -207,7 +208,10 @@ def init_music(request):
                 music.comment = str(value).strip()
         music.path = file.replace(project_path, 'http://127.0.0.1:8000')
         music.save()
-        music.category.add(category[0])
+        if flag:
+            music.category.add(category[0])
+        else:
+            music.category.add(category)
         music.save()
 
 
@@ -223,9 +227,7 @@ def recommend(request):
 def get_music_by_genre(request):
     if request.method == 'GET':
         try:
-            print(request.GET.get('genres', None))
-            musics = Music.objects.filter(genre=request.GET.get('genres', None))[0:19]
-            print(musics.count())
+            musics = Music.objects.filter(genre=request.GET.get('genres', None))[25:45]
         except(Music.DoesNotExist, IUser.DoesNotExist):
             return HttpResponse('failed')
         play_list_json = []

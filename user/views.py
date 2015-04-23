@@ -5,8 +5,9 @@ from user.models import IUser, Music, PlayList
 import json
 import hashlib
 
-# def index(request):
-#     return render_to_response('user/register.html', locals())
+
+def profile(request):
+    return render_to_response('user/profile.html', locals())
 
 
 #  用户注册
