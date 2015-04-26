@@ -2,6 +2,7 @@ from django.http import *
 from user.models import *
 from django.utils import timezone
 import json
+from music.recommend import coldStart
 from iyinyue.utils import filedir, mp3reader, json4music
 import mutagen.mp3
 
@@ -216,52 +217,55 @@ def init_music(request):
 
 
 # 个性化音乐推荐
-# method = POST
+# method = GET get请求
+# parm : user_name 待推用户名
 def recommend(request):
-    if request.method == 'POST':
-        user_name = request.POST.get('user_name', None)  # 获取当前用户名
+    if request.method == 'GET':
+        user_name = request.GET.get('user_name', None)  # 获取当前用户名
         user = IUser.objects.get(user_name=user_name)  # 获取当前用户所有信息
         #  获取当前时间与用户注册时间的时间差
         #  约定用户在注册后的十天内为新用户
         time_delta = timezone.now().date() - user.register_time
         recommend_musics = []  # 待推荐的歌曲
-        recommended_musics = []  # 推荐历史记录
+        # recommended_musics = []  # 推荐历史记录
         recommend_json = []  # 返回前台歌曲信息的json数组
-        try:
-            # 查找推荐记录是否存在，主要用户新注册用户
-            recommend_history = RecommendHistory.objects.get(recommend_user__user_name=user_name)
-        except RecommendHistory.DoesNotExist:  # 若不存在，则新建一个推荐记录
-            recommend_history = RecommendHistory(recommend_user=user, latest_recommend_time=timezone.now())
-        for recommended_item in recommend_history.recommend_items.all():  # 获取推荐过的所有歌曲记录
-            recommended_musics.append(recommended_item.music)  # 添加
-        if time_delta.days < 2:
+        # try:
+        #     # 查找推荐记录是否存在，主要用户新注册用户
+        #     recommend_history = RecommendHistory.objects.get(recommend_user__user_name=user_name)
+        # except RecommendHistory.DoesNotExist:  # 若不存在，则新建一个推荐记录
+        #     recommend_history = RecommendHistory(recommend_user=user, latest_recommend_time=timezone.now())
+        # for recommended_item in recommend_history.recommend_items.all():  # 获取推荐过的所有歌曲记录
+        #     recommended_musics.append(recommended_item.music)  # 添加
+        if time_delta.days < 20:
             if user.friends.count() < 2:
-                if user.play_recorded.count() < 10:
+                if user.play_recorded.count() < 100:
+                    recommend_musics = coldStart.cold_start(user)
                     # birthday_year = str(user.birthday.year)  # 获取生日年份 TODO
                     # age = birthday_year[-2]  # 90s/80s/70s ?  # TODO
-                    musics = Music.objects.filter(
-                        genre='Blues'  # TODO 要改成按age搜索的
-                    ).order_by('-popular')  # 热度由高到低排序.获取前两首
-                    count = 0
-                    for music in musics:  # 遍历歌曲
-                        if count == 2:  # 只取两首
-                            break
-                        if music not in recommended_musics:  # 如果该歌曲未推荐当前用户
-                            count += 1
-                            recommend_musics.append(music)  # 则将该歌曲加到待推荐列表中
-                    musics = Music.objects.all().order_by('-popular')  # 获取热度最高的歌曲
-                    count = 0
-                    for music in musics:
-                        if count == 3:
-                            break
-                        if music not in recommend_musics:
-                            if music not in recommended_musics:
-                                count += 1
-                                recommend_musics.append(music)
+                    # musics = Music.objects.filter(
+                    #     genre='Blues'  # TODO 要改成按age搜索的
+                    # ).order_by('-popular')  # 热度由高到低排序.获取前两首
+                    # count = 0
+                    # for music in musics:  # 遍历歌曲
+                    #     if count == 2:  # 只取两首
+                    #         break
+                    #     if music not in recommended_musics:  # 如果该歌曲未推荐当前用户
+                    #         count += 1
+                    #         recommend_musics.append(music)  # 则将该歌曲加到待推荐列表中
+                    # musics = Music.objects.all().order_by('-popular')  # 获取热度最高的歌曲
+                    # count = 0
+                    # for music in musics:
+                    #     if count == 3:
+                    #         break
+                    #     if music not in recommend_musics:
+                    #         if music not in recommended_musics:
+                    #             count += 1
+                    #             recommend_musics.append(music)
+
         for recommend_music in recommend_musics:
-            recommend_item = RecommendItem(music=recommend_music)  # 新建一个推荐歌曲记录
-            recommend_item.save()  # 保存，不保存好像会出错
-            recommend_history.recommend_items.add(recommend_item)  # 添加到历史记录中去
+            # recommend_item = RecommendItem(music=recommend_music)  # 新建一个推荐歌曲记录
+            # recommend_item.save()  # 保存，不保存好像会出错
+            # recommend_history.recommend_items.add(recommend_item)  # 添加到历史记录中去
             recommend_json.append(json4music.json4music(recommend_music))  # 转换为json串
         return HttpResponse(json.dumps(recommend_json), content_type='application/json')
     return HttpResponse('method error')

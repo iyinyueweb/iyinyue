@@ -44,16 +44,7 @@
                     <div class="col-md-5">
                       <h3 class="font-thin">TOP 10</h3>
                       <div class="list-group bg-white list-group-lg no-bg auto">                          
-                        <a href="#" class="list-group-item clearfix">
-                          <span class="pull-right h2 text-muted m-l">1</span>
-                          <span class="pull-left thumb-sm avatar m-r">
-                            <img src="{% static 'iyinyue/images/a4.png' %}" alt="...">
-                          </span>
-                          <span class="clear">
-                            <span>Little Town</span>
-                            <small class="text-muted clear text-ellipsis">by Chris Fox</small>
-                          </span>
-                        </a>
+
                       </div>
                     </div>
                   </div>
@@ -167,6 +158,7 @@
         </section>
 {% endblock %}
 {% block script %}
-   <script type="text/javascript" src="{% static 'user/js/getCurrentUser.js' %}"></script>
+    <script type="text/javascript" src="{% static 'user/js/getCurrentUser.js' %}"></script>
     <script type="text/javascript" src="{% static 'music/js/index.js' %}"></script>
+    <script type="text/javascript" src="{% static 'music/js/recommend.js' %}"></script>
 {% endblock %}
