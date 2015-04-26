@@ -143,8 +143,8 @@ def read_file():
     print("total count", count)
     return re
 
-
-r = read_file()
-init_stat(r)
-print("recommend for user: 226777:\n", recommend('226777'))
-print("recommend2 for user: 226777:\n", recommend2('226777'))
+if __name__ == '__main__':
+    r = read_file()
+    init_stat(r)
+    print("recommend for user: 226777:\n", recommend('226777'))
+    print("recommend2 for user: 226777:\n", recommend2('226777'))

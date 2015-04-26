@@ -154,5 +154,6 @@ def test():
     print("sim3", item_similarity3(train, 0.5))
     # print(recommendation(train, 'A', item_similarity(train), 10))
 
-test()
+if __name__ == '__main__':
+    test()
 

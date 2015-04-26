@@ -1,6 +1,6 @@
 __author__ = 'jjZhu'
 import math
-from user_action import UserCF
+# from user_action import UserCF
 
 
 # 计算召回率

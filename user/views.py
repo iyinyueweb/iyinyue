@@ -64,7 +64,22 @@ def get_user_info(request):
         }
         return HttpResponse(json.dumps(user_info_json), content_type='application/json')
 
-#
+
+# 添加好友
+# method : POST
+# parm : user_name 用户名
+#        friend_name 待添加的好友昵称
+def add_friend(request):
+    user_name = request.POST.get('user_name', None)
+    friend_name = request.POST.get('friend_name', None)
+    try:
+        user = IUser.objects.get(user_name=user_name)  # 查询用户
+        friend = IUser.objects.get(user_name=friend_name)  # 查找待添好友
+    except IUser.DoesNotExist:
+        HttpResponse('not found')
+    else:
+        user.friends.add(friend)  # 添加好友
+        user.save()
 # def hello(request):
 #     return render_to_response('user/hello.html', locals())
 #

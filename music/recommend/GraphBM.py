@@ -53,6 +53,7 @@ def test():
     train['d'] = {'B': 1, 'C': 1}
     print(personal_rank(train, 0.6, 'A'))
 
-test()
+if __name__ == '__main__':
+    test()
 
 

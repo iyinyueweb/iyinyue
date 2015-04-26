@@ -102,11 +102,12 @@ def recommend(user, train, similarity):
             rank[i] += wuv * 1
     return rank
 
-train = dict()
-train['A'] = {'a': {1}, 'b': {1}, 'd': {1}}
-train['B'] = {'a': {1}, 'c': {1}}
-train['C'] = {'b': {1}, 'e': {1}}
-train['D'] = {'c': {1}, 'd': {1}, 'e': {1}}
-similarity = user_similarity(train)
-print("相似度矩阵", similarity)
-print("推荐", recommend('A', train, similarity))
+if __name__ == '__main__':
+    train = dict()
+    train['A'] = {'a': {1}, 'b': {1}, 'd': {1}}
+    train['B'] = {'a': {1}, 'c': {1}}
+    train['C'] = {'b': {1}, 'e': {1}}
+    train['D'] = {'c': {1}, 'd': {1}, 'e': {1}}
+    similarity = user_similarity(train)
+    print("相似度矩阵", similarity)
+    print("推荐", recommend('A', train, similarity))

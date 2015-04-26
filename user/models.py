@@ -32,11 +32,18 @@ class PlayTime(models.Model):
     play_time = models.IntegerField(blank=True, null=True, default=0)  # 播放次数
     add_date = models.DateTimeField('add_date', blank=True, null=True)  # 歌曲添加的时间
 
+    def __str__(self):
+        return u'歌名：' + self.music.song_name + ',' + \
+               u'播放次数：' + str(self.play_time)
+
 
 class PlayList(models.Model):
     play_list_name = models.CharField(max_length=100)  # 列表名称
     play_time = models.ManyToManyField(PlayTime,  blank=True, null=True,
                                        related_name="musics")  # 列表歌曲播放情况
+
+    def __str__(self):
+        return u'列表名' + self.play_list_name
 
 
 # 音乐平台用户表
@@ -61,7 +68,16 @@ class IUser(models.Model):
     friends = models.ManyToManyField('self', blank=True, null=True, related_name='friends')  # 好友
 
     def __str__(self):
-        return self.user_name
+        return u'用户名:' + self.user_name
+
+
+# 好友/粉丝 models
+class Friend(models.Model):
+    friend = models.ForeignKey(IUser, blank=True, null=True, related_name='friend')  # 对应的好友/粉丝
+    state = models.BooleanField()  # 添加状态，false：单向， true：互为好友
+
+    def __str__(self):
+        return self.friend.user_name
 
 
 # 用户对歌曲评论表
@@ -71,11 +87,19 @@ class Comment(models.Model):
     comment_content = models.CharField(max_length=10000)  # 评论内容
     comment_music = models.ForeignKey(Music, blank=True, null=True, related_name='comment_music')  # 目标歌曲
 
+    def __str__(self):
+        return self.comment_user.user_name + \
+            self.comment_music.song_name + \
+            self.comment_content
+
 
 # 推荐的项目
 class RecommendItem(models.Model):
     music = models.ForeignKey(Music)  # 推荐的歌曲
     recommend_date = models.DateTimeField('recommend_date', default=timezone.now)  # 推荐的时间
+
+    def __str__(self):
+        return self.music.song_name
 
 
 # 推荐的历史记录表
@@ -84,6 +108,9 @@ class RecommendHistory(models.Model):
     latest_recommend_time = models.DateTimeField()  # 最新一次推荐时间
     # 推荐的歌曲列表 many-to-many
     recommend_items = models.ManyToManyField(RecommendItem, blank=True, null=True, related_name='recommend_item')
+
+    def __str__(self):
+        return self.recommend_user.user_name
 
 
 # 用户为歌曲打标签表
@@ -94,7 +121,10 @@ class MusicTag(models.Model):
     tag_content = models.CharField(max_length=100)  # 标记内容
 
     def __str__(self):
-        return self.tag_user.user_name+','+self.tag_music.song_name+','+self.tag_time.__str__()+','+self.tag_content
+        return self.tag_user.user_name+',' + \
+            self.tag_music.song_name+',' + \
+            self.tag_time.__str__()+',' + \
+            self.tag_content
 
 
 # 用户相关操作表
