@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django.utils.timezone
 from django.utils.timezone import utc
 import datetime
+import django.utils.timezone
 
 
 class Migration(migrations.Migration):
@@ -16,9 +16,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Comment',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
-                ('comment_time', models.DateTimeField(default=datetime.datetime(2015, 4, 23, 9, 13, 34, 402341, tzinfo=utc), blank=True, null=True, verbose_name='comment_time')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
+                ('comment_time', models.DateTimeField(null=True, blank=True, default=datetime.datetime(2015, 4, 26, 15, 2, 47, 161583, tzinfo=utc), verbose_name='comment_time')),
                 ('comment_content', models.CharField(max_length=10000)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Friend',
+            fields=[
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
+                ('state', models.BooleanField(default=False)),
             ],
             options={
             },
@@ -27,16 +37,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='IUser',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('user_name', models.CharField(max_length=100)),
-                ('birthday', models.DateField(blank=True, null=True, verbose_name='birthday')),
+                ('birthday', models.DateField(null=True, blank=True, verbose_name='birthday')),
                 ('password', models.CharField(max_length=100)),
-                ('sex', models.IntegerField(default=1, blank=True, null=True)),
-                ('email', models.EmailField(max_length=100, blank=True, null=True)),
-                ('tag', models.CharField(max_length=200, blank=True, null=True)),
-                ('head_img', models.CharField(max_length=100, blank=True, null=True)),
-                ('register_time', models.DateField(default=datetime.datetime(2015, 4, 23, 9, 13, 34, 395340, tzinfo=utc), blank=True, null=True)),
-                ('last_time', models.DateField(blank=True, null=True)),
+                ('sex', models.IntegerField(null=True, blank=True, default=1)),
+                ('email', models.EmailField(null=True, max_length=100, blank=True)),
+                ('tag', models.CharField(null=True, max_length=200, blank=True)),
+                ('head_img', models.CharField(null=True, max_length=100, blank=True)),
+                ('register_time', models.DateField(null=True, blank=True, default=datetime.datetime(2015, 4, 26, 15, 2, 47, 150583, tzinfo=utc))),
+                ('last_time', models.DateField(null=True, blank=True)),
             ],
             options={
             },
@@ -45,14 +55,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Music',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('song_name', models.CharField(max_length=100)),
-                ('album', models.CharField(max_length=100, blank=True, null=True)),
-                ('year', models.CharField(max_length=100, blank=True, null=True)),
-                ('artist', models.CharField(max_length=100, blank=True, null=True)),
-                ('comment', models.CharField(max_length=100, blank=True, null=True)),
-                ('genre', models.CharField(max_length=100, blank=True, null=True)),
-                ('path', models.CharField(max_length=100, blank=True, null=True)),
+                ('album', models.CharField(null=True, max_length=100, blank=True)),
+                ('year', models.CharField(null=True, max_length=100, blank=True)),
+                ('artist', models.CharField(null=True, max_length=100, blank=True)),
+                ('comment', models.CharField(null=True, max_length=100, blank=True)),
+                ('genre', models.CharField(null=True, max_length=100, blank=True)),
+                ('path', models.CharField(null=True, max_length=100, blank=True)),
                 ('popular', models.IntegerField(default=0)),
                 ('unpopular', models.IntegerField(default=0)),
             ],
@@ -63,7 +73,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MusicCategory',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('music_category', models.CharField(max_length=100)),
             ],
             options={
@@ -73,8 +83,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MusicTag',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
-                ('tag_time', models.DateField(default=datetime.datetime(2015, 4, 23, 9, 13, 34, 406341, tzinfo=utc), verbose_name='tag_time')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
+                ('tag_time', models.DateField(default=datetime.datetime(2015, 4, 26, 15, 2, 47, 165584, tzinfo=utc), verbose_name='tag_time')),
                 ('tag_content', models.CharField(max_length=100)),
                 ('tag_music', models.ForeignKey(to='user.Music')),
                 ('tag_user', models.ForeignKey(to='user.IUser')),
@@ -86,7 +96,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Operation',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('operation_time', models.DateField(verbose_name='operation_time')),
                 ('operation_type', models.CharField(max_length=50)),
                 ('operation_music', models.ForeignKey(to='user.Music')),
@@ -99,7 +109,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PlayList',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('play_list_name', models.CharField(max_length=100)),
             ],
             options={
@@ -109,9 +119,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PlayTime',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
-                ('play_time', models.IntegerField(default=0, blank=True, null=True)),
-                ('add_date', models.DateTimeField(blank=True, null=True, verbose_name='add_date')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
+                ('play_time', models.IntegerField(null=True, blank=True, default=0)),
+                ('add_date', models.DateTimeField(null=True, blank=True, verbose_name='add_date')),
                 ('music', models.ForeignKey(to='user.Music')),
             ],
             options={
@@ -121,7 +131,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RecommendHistory',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('latest_recommend_time', models.DateTimeField()),
             ],
             options={
@@ -131,7 +141,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RecommendItem',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('recommend_date', models.DateTimeField(default=django.utils.timezone.now, verbose_name='recommend_date')),
                 ('music', models.ForeignKey(to='user.Music')),
             ],
@@ -142,7 +152,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='recommendhistory',
             name='recommend_items',
-            field=models.ManyToManyField(to='user.RecommendItem', related_name='recommend_item', blank=True, null=True),
+            field=models.ManyToManyField(null=True, related_name='recommend_item', blank=True, to='user.RecommendItem'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -154,55 +164,61 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='playlist',
             name='play_time',
-            field=models.ManyToManyField(to='user.PlayTime', related_name='musics', blank=True, null=True),
+            field=models.ManyToManyField(null=True, related_name='musics', blank=True, to='user.PlayTime'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='music',
             name='category',
-            field=models.ManyToManyField(to='user.MusicCategory', related_name='category', blank=True, null=True),
+            field=models.ManyToManyField(null=True, related_name='category', blank=True, to='user.MusicCategory'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='iuser',
             name='dislike_songs',
-            field=models.ManyToManyField(to='user.Music', related_name='dislike_songs', blank=True, null=True),
+            field=models.ManyToManyField(null=True, related_name='dislike_songs', blank=True, to='user.Music'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='iuser',
             name='favorite_songs',
-            field=models.ManyToManyField(to='user.PlayTime', related_name='favorite_songs', blank=True, null=True),
+            field=models.ManyToManyField(null=True, related_name='favorite_songs', blank=True, to='user.PlayTime'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='iuser',
             name='friends',
-            field=models.ManyToManyField(to='user.IUser', related_name='friends_rel_+', blank=True, null=True),
+            field=models.ManyToManyField(null=True, related_name='friends', blank=True, to='user.Friend'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='iuser',
             name='play_list',
-            field=models.ManyToManyField(to='user.PlayList', related_name='play_list', blank=True, null=True),
+            field=models.ManyToManyField(null=True, related_name='play_list', blank=True, to='user.PlayList'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='iuser',
             name='play_recorded',
-            field=models.ManyToManyField(to='user.PlayTime', related_name='play_recorded', blank=True, null=True),
+            field=models.ManyToManyField(null=True, related_name='play_recorded', blank=True, to='user.PlayTime'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='friend',
+            name='friend',
+            field=models.ForeignKey(null=True, related_name='friend', blank=True, to='user.IUser'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='comment',
             name='comment_music',
-            field=models.ForeignKey(to='user.Music', blank=True, related_name='comment_music', null=True),
+            field=models.ForeignKey(null=True, related_name='comment_music', blank=True, to='user.Music'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='comment',
             name='comment_user',
-            field=models.ForeignKey(to='user.IUser', blank=True, related_name='comment_user', null=True),
+            field=models.ForeignKey(null=True, related_name='comment_user', blank=True, to='user.IUser'),
             preserve_default=True,
         ),
     ]

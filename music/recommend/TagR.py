@@ -1,6 +1,7 @@
 __author__ = 'JJZhu'
 import math
 import random
+from user.models import MusicTag
 
 user_tags = dict()  # 存储用户u打过标签b的次数
 tag_items = dict()  # 存储物品i被打过标签b的次数
@@ -50,9 +51,9 @@ def popularity(item_pop, recommend_items):
     return ret / float(len(recommend_items))
 
 
-def init_stat(records):
-
-    for user, item, tag in records:
+# 初始化
+def init_stat(tags):
+    for user, item, tag in tags:
         add_value_to_mat(user_tags, user, tag, 1)
         add_value_to_mat(tag_items, tag, item, 1)
         add_value_to_mat(user_items, user, item, 1)
@@ -95,6 +96,16 @@ def recommend2(user):
                 recommend_items[item] = 0
             recommend_items[item] += wut / math.log(1 + len(tag_users[tag])) * wti
     return recommend_items
+
+
+#  根据用户标签数据推荐
+def recommend_by_user_tag(user):
+    tags = []  # 存储用户标签数据
+    music_tags = MusicTag.objects.all()  # 获取用户的标签数据
+    for music_tag in music_tags:  # 遍历标签数据
+        tags.append([music_tag.tag_user.id, music_tag.tag_music.id, music_tag.tag_content])
+    init_stat(tags)  # 初始化全局变量
+    return recommend2(user.id)  # 计算推荐结果
 
 
 def test():

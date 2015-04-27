@@ -65,7 +65,7 @@ class IUser(models.Model):
                                             related_name="favorite_songs")  # 收藏列表
     dislike_songs = models.ManyToManyField(Music, blank=True, null=True,
                                            related_name="dislike_songs")  # dislike歌曲列表
-    friends = models.ManyToManyField('self', blank=True, null=True, related_name='friends')  # 好友
+    friends = models.ManyToManyField('Friend', blank=True, null=True, related_name='friends')  # 好友
 
     def __str__(self):
         return u'用户名:' + self.user_name
@@ -74,7 +74,7 @@ class IUser(models.Model):
 # 好友/粉丝 models
 class Friend(models.Model):
     friend = models.ForeignKey(IUser, blank=True, null=True, related_name='friend')  # 对应的好友/粉丝
-    state = models.BooleanField()  # 添加状态，false：单向， true：互为好友
+    state = models.BooleanField(default=False)  # 添加状态，false：单向， true：互为好友
 
     def __str__(self):
         return self.friend.user_name

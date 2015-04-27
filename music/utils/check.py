@@ -12,6 +12,7 @@ def check_recommended_history(user):
         recommend_history = RecommendHistory.objects.get(recommend_user__user_name=user.user_name)
     except RecommendHistory.DoesNotExist:  # 若不存在，则新建一个推荐记录
         recommend_history = RecommendHistory(recommend_user=user, latest_recommend_time=timezone.now())
+        recommend_history.save()
     for recommended_item in recommend_history.recommend_items.all():  # 获取推荐过的所有歌曲记录
         recommended_musics.append(recommended_item.music)  # 添加
     return recommend_history, recommended_musics
