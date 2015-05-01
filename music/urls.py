@@ -21,4 +21,12 @@ urlpatterns = patterns('',
                        url(r'^recommend/$', views.recommend, name='recommend'),
                        # 根据歌曲风格类别来获取音乐
                        url(r'^getByGenre/$', views.get_music_by_genre, name='getByGenre'),
+                       # 获取单曲详情
+                       url(r'^getDetail/$', views.get_detail_by_music_id, name='getDetail'),
+                       # 获取单曲评论
+                       url(r'^getComments/$', views.get_comments, name='getComments'),
+
+                       url(r'^addComment/$', views.add_comment, name='addComment'),
+
+
                        )

@@ -1,10 +1,31 @@
 from django.http import *
-from user.models import *
-from django.utils import timezone
 import json
-from music.recommend import coldStart
-from iyinyue.utils import filedir, mp3reader, json4music
 import mutagen.mp3
+import datetime
+
+from iyinyue.utils import filedir, mp3reader, json4music
+from iyinyue import constant
+from user.models import *
+from music.recommend import coldStart
+
+
+def get_detail_by_music_id(request):
+    if request.method == 'GET':
+        music_id = request.GET.get('music_id', None)
+        try:
+            music = Music.objects.get(pk=music_id)
+        except Music.DoesNotExist:
+            HttpResponse('error')  # TODO
+        else:
+            music_json = {
+                'id': music.id,
+                'title': music.song_name,
+                'artist': music.artist,
+                'mp3': music.path,
+                'poster': "images/m0.jpg",
+                'cover': 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+            }
+            return HttpResponse(json.dumps(music_json), content_type='application/json')
 
 
 # 获取登录用户的歌曲列表
@@ -89,7 +110,21 @@ def download(request):
                               operation_user=user,
                               operation_music=music)
         operation.save()
-        return HttpResponse('successful')
+
+        def file_iterator(file_name, chunk_size=512):
+            with open(file_name, encoding='utf-8') as file_stream:
+                while True:
+                    c = file_stream.read(chunk_size)
+                    if c:
+                        yield c
+                    else:
+                        break
+
+        file_name = constant.PROJECT_PATH + '/music/recommend/data/testSet.txt'
+        response = StreamingHttpResponse(file_iterator(file_name))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(file_name)
+        return response
 
 
 # 用户标记红心操作
@@ -190,7 +225,8 @@ def comment_music(request):
 
 # 批量添加音乐
 def init_music(request):
-    project_path = 'F:/project/iyinyue'
+    project_path = constant.PROJECT_PATH
+
     path = project_path + '/static/iyinyue/mp3'
     all_files = filedir.print_path(path)
     for file in all_files:
@@ -277,6 +313,47 @@ def get_music_by_genre(request):
             play_list_json.append(music_json)
         return HttpResponse(json.dumps(play_list_json), content_type='application/json')
     return None
+
+
+# 获取歌曲评论
+# method GET
+# parm: music_id
+def get_comments(request):
+    if request.method == 'GET':
+        music_id = request.GET.get('music_id', None)
+        comments_json = []
+        try:
+            comments = Comment.objects.filter(comment_music__pk=music_id)
+        except Comment.DoesNotExist:
+            HttpResponse('failed')
+        else:
+            for comment in comments:
+                comment_json = {
+                    'user_name': comment.comment_user.user_name,
+                    'comment_time': datetime.datetime.strftime(comment.comment_time, '%Y-%m-%d %H:%M:%S'),
+                    'comment_content': comment.comment_content
+                }
+                comments_json.append(comment_json)
+            return HttpResponse(json.dumps(comments_json), content_type='application/json')
+
+
+def add_comment(request):
+    if request.method == 'POST':
+        comment_user = request.POST.get('comment_user', None)
+        comment_music_id = request.POST.get('comment_music_id', None)
+        comment_content = request.POST.get('comment_content', None)
+        try:
+            curr_user = IUser.objects.get(user_name=comment_user)
+            curr_music = Music.objects.get(pk=comment_music_id)
+        except(IUser.DoesNotExist, Music.DoesNotExist):
+            return HttpResponse('false')
+        else:
+            comment = Comment()
+            comment.comment_user = curr_user
+            comment.comment_music = curr_music
+            comment.comment_content = comment_content
+            comment.save()
+            return HttpResponse('successful')
 
 if __name__ == '__main__':
     init_music(request=None)

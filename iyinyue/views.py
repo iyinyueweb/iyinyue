@@ -19,3 +19,6 @@ def not_found(request):
     return render_to_response('404.html', RequestContext(request, {}))
 
 
+# TODO delete
+def detail(request):
+    return render_to_response('music/detail.html', RequestContext(request, {}))

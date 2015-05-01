@@ -1,6 +1,9 @@
 from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
+                       # TODO delete
+                       url(r'^detail/$', 'iyinyue.views.detail', name='detail'),
+
                        url(r'^index/$', 'iyinyue.views.index', name='index'),
                        url(r'^genres/$', 'iyinyue.views.genres', name='genres'),
                        url(r'^404/$', 'iyinyue.views.not_found', name='404'),
