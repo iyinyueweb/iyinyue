@@ -3,7 +3,6 @@ __doc__ = 'apriori关联分析' \
           '发现频繁项集和发现关联规则' \
           '伪代码：' \
           ''
-import numpy as np
 
 
 def load_data_set():
@@ -87,31 +86,52 @@ def apriori(data_set, min_support=0.5):
 #   support_data: 频繁项集合支持率字典
 #   min_conf: 最小可信度阀值 默认0.7
 def generate_rules(freq_set_list, support_data, min_conf=0.7):
-    big_rule_list = []
-    for i in range(1, len(freq_set_list)):
-        for freq_set in freq_set_list[i]:
-            h1 = [frozenset([item]) for item in freq_set]
-            if i > 1:
+    big_rule_list = []  # 保存关联规则
+    for i in range(1, len(freq_set_list)):  # 只读取项数 >= 2 的集合
+        for freq_set in freq_set_list[i]:  # 遍历集合中的频繁集
+            h1 = [frozenset([item]) for item in freq_set]  # 获取频繁集中项为1的子集
+            if i > 1:  # 如果当前频繁集中频繁项的项数>2
+                # 进行
                 rules_from_conseq(freq_set, h1, support_data, big_rule_list, min_conf)
             else:
+                # 计算可信度
                 calc_conf(freq_set, h1, support_data, big_rule_list, min_conf)
     return big_rule_list
 
 
-def calc_conf(freq_set, h, support_data, brl, min_config=0.7):
-    pruned_h = []
-    for conseq in h:
+# 计算可信度，保存符合最小可信度条件的频繁项集合
+# param:
+#   freq_set: 频繁项集合
+#   h: freq_set的含K项元素的子集（非空）
+#   support_data: 所有频繁项集合支持率字典
+#   brl: 仅存储关键规则列表
+#   min_config: 最小支持度，默认0.7
+def calc_conf(freq_set, h, support_data, brl, min_conf=0.7):
+    pruned_h = []  # 保存规则列表
+    for conseq in h:  # 遍历频繁项子集
+        # 计算可信度
+        # 计算公式
+        #   A-->B规则的可信度：
+        #   假设{A,B}的支持度为0.6， A的支持度为0.8
+        #   则A-->B该条规则的可信度为support{A,B}/support(A)= 0.6/0.8 = 0.75
         conf = support_data[freq_set]/support_data[freq_set-conseq]
-        if conf >= min_config:
+        if conf >= min_conf:  # 若当前规则可信度符合最小可信度
             print(freq_set-conseq, '-->', conseq, 'conf:', conf)
-            brl.append((freq_set-conseq, conseq, conf))
-            pruned_h.append(conseq)
+            brl.append((freq_set-conseq, conseq, conf))  # 保存关联规则
+            pruned_h.append(conseq)  # 保存规则右部分
     return pruned_h
 
 
+# 生成更多关联规则函数
+# param:
+#   freq_set: 频繁项集合
+#   h: freq_set的含K项元素的子集（非空）
+#   support_data: 所有频繁项集合支持率字典
+#   brl: 仅存储关键规则列表
+#   min_config: 最小支持度，默认0.7
 def rules_from_conseq(freq_set, h, support_data, brl, min_conf=0.7):
-    m = len(h[0])
-    if len(freq_set) > (m + 1):  # try further merging
+    m = len(h[0])  # 获取h子集的长度
+    if len(freq_set) > (m + 1):  # 判断当前频繁项集合是否可以移除大小为m的子集，
         hmp1 = apriori_gen(h, m+1)  # create Hm+1 new candidates
         hmp1 = calc_conf(freq_set, hmp1, support_data, brl, min_conf)
         if len(hmp1) > 1:   # need at least two sets to merge
@@ -121,7 +141,7 @@ def rules_from_conseq(freq_set, h, support_data, brl, min_conf=0.7):
 def test():
     data_set = load_data_set()
     r, s = apriori(data_set)
-    rules = generate_rules(r, s)
+    rules = generate_rules(r, s, min_conf=0.5)
     print(rules)
     # c1 = create_c1(data_set)
     # print(c1)
