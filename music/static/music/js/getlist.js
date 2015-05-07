@@ -1,5 +1,5 @@
 /**
- * Created by Administrator on 2015/4/11 0011.
+ * Created by jjzhu on 2015/4/11 0011.
  */
 $(document).ready(function(){
     var play_list =[];

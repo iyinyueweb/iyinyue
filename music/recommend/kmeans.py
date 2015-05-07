@@ -5,17 +5,6 @@ import numpy as np
 from math import *
 
 
-# 加载测试数据集
-def load_data_set(file_name):
-    data_mat = []  # 数据矩阵
-    file_read = open(file_name)  # 打开文件
-    for line in file_read.readlines():
-        cur_line = line.strip().split('\t')  # tab 分割
-        float_line = list(map(float, cur_line))  # 类型转换
-        data_mat.append(float_line)
-    return data_mat
-
-
 # 计算两个向量的欧式距离
 def dist_eclud(vector_a, vector_b):
     return sqrt(np.sum(np.power(vector_a - vector_b, 2)))
@@ -104,6 +93,17 @@ def binary_kmeans(data_set, k, dist_measure=dist_eclud):
         center_list.append(best_new_centroids[1, :].tolist()[0])  # 添加第二个划分中心
         cluster_ss[np.nonzero(cluster_ss[:, 0].A == best_center_to_split_index)[0], :] = best_cluster_ss  # 更新当前划分簇的误差平方和
     return np.mat(center_list), cluster_ss
+
+
+# 加载测试数据集
+def load_data_set(file_name):
+    data_mat = []  # 数据矩阵
+    file_read = open(file_name)  # 打开文件
+    for line in file_read.readlines():
+        cur_line = line.strip().split('\t')  # tab 分割
+        float_line = list(map(float, cur_line))  # 类型转换
+        data_mat.append(float_line)
+    return data_mat
 
 
 def test():

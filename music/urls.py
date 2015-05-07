@@ -4,7 +4,7 @@ from music import views
 
 urlpatterns = patterns('',
                        # 获取用户播放列表url
-                       url(r'^playlist/$', views.get_play_list, name='get_play_list'),
+                       url(r'^getPlaylist/$', views.get_play_list, name='get_play_list'),
                        # 添加音乐到播放列表url
                        url(r'^addToList/$', views.add_to_playlist, name='add_to_playlist'),
                        # 用户下载操作url

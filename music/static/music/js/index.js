@@ -1,10 +1,13 @@
 /**
- * Created by Administrator on 2015/4/22 0022.
+ * Created by JJZHU on 2015/4/22 0022.
  */
+var url = 'http://127.0.0.1:8000';
+
 $(document).ready(function(){
     var music_list =[];
     $.ajax({
          type: 'GET',
+        // TODO
          url: 'http://127.0.0.1:8000/music/getByGenre/',
          dateType:'json',
          contentType:"application/json",
@@ -48,7 +51,7 @@ $(document).ready(function(){
                           '<a href="#"><img src="'+music_list[i]['cover']+'" alt="" class="r r-2x img-full"></a>'+
                         '</div>'+
                         '<div class="padder-v">'+
-                          '<a href="#" class="text-ellipsis">'+music_list[i]['title']+'</a>'+
+                          '<a href="'+url+'/detail/?music_id='+music_list[i]['id']+'" target="blank"" class="text-ellipsis">'+music_list[i]['title']+'</a>'+
                           '<a href="#" class="text-ellipsis text-xs text-muted">'+music_list[i]['artist']+'</a>'+
                         '</div>'+
                       '</div>'+
@@ -56,9 +59,25 @@ $(document).ready(function(){
         if(i%2 == 0 && i != 0){
             list += '<div class="clearfix visible-xs"></div>';
         }
-
     }
-    $(".row-sm").append(
+    $(".row-sm").eq(0).append(
         list
     )
 });
+
+function new_song(){
+    $.ajax({
+         type: 'GET',
+        // TODO
+         url: 'http://127.0.0.1:8000/music/getByGenre/',
+         dateType:'json',
+         contentType:"application/json",
+         async:false,
+         data:{
+           'genres':'Blues'
+         },
+         success: function(data){
+
+         }
+    })
+}

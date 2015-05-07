@@ -6,7 +6,8 @@ import datetime
 from iyinyue.utils import filedir, mp3reader, json4music
 from iyinyue import constant
 from user.models import *
-from music.recommend import coldStart
+from music.recommend import coldStart, UserCF, ItemCF
+import os
 
 
 def get_detail_by_music_id(request):
@@ -17,13 +18,18 @@ def get_detail_by_music_id(request):
         except Music.DoesNotExist:
             HttpResponse('error')  # TODO
         else:
+            cover = constant.PROJECT_PATH + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+            if os.path.exists(cover):
+                cover = 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+            else:
+                cover = 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/default.jpg'
             music_json = {
                 'id': music.id,
                 'title': music.song_name,
                 'artist': music.artist,
                 'mp3': music.path,
                 'poster': "images/m0.jpg",
-                'cover': 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+                'cover': cover
             }
             return HttpResponse(json.dumps(music_json), content_type='application/json')
 
@@ -34,17 +40,12 @@ def get_play_list(request):
     play_lists = user.play_list.all()
     play_list_json = []
     for play_list in play_lists:
-        play_times = play_list.play_time.all()
-        for play_time in play_times:
-            music = play_time.music
-            music_json = {
-                'id': music.id,
-                'title': music.song_name,
-                'artist': music.artist,
-                'mp3': music.path,
-                'poster': "images/m0.jpg"
-            }
-            play_list_json.append(music_json)
+        list_json = {
+            'id': play_list.id,
+            'name': play_list.play_list_name,
+            'count': play_list.play_time.count()
+        }
+        play_list_json.append(list_json)
     return HttpResponse(json.dumps(play_list_json), content_type='application/json')
 
 
@@ -283,10 +284,12 @@ def recommend(request):
         recommend_musics = []  # 待推荐的歌曲
         # recommended_musics = []  # 推荐历史记录
         recommend_json = []  # 返回前台歌曲信息的json数组
-        if time_delta.days < 20:
-            if user.friends.count() < 2:
-                if user.play_recorded.count() < 100:
-                    recommend_musics = coldStart.cold_start(user)
+
+        if user.play_recorded.count() < 10:  # 如果播放的歌曲少于10 调用冷启动
+            recommend_musics = coldStart.cold_start(user)
+        else:
+            recommend_musics = []
+
         for recommend_music in recommend_musics:
             recommend_json.append(json4music.json4music(recommend_music))  # 转换为json串
         return HttpResponse(json.dumps(recommend_json), content_type='application/json')
@@ -302,13 +305,19 @@ def get_music_by_genre(request):
         except(Music.DoesNotExist, IUser.DoesNotExist):
             return HttpResponse('failed')
         play_list_json = []
+
         for music in musics:
+            cover = constant.PROJECT_PATH + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+            if os.path.exists(cover):
+                cover = 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+            else:
+                cover = 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/default.jpg'
             music_json = {
                 'id': music.id,
                 'title': music.song_name,
                 'artist': music.artist,
                 'mp3': music.path,
-                'cover': 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+                'cover': cover
             }
             play_list_json.append(music_json)
         return HttpResponse(json.dumps(play_list_json), content_type='application/json')

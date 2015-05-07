@@ -2,7 +2,7 @@ $(document).ready(function(){
     var play_list =[];
     $.ajax({
         type: 'GET',
-        url: 'http://127.0.0.1:8000/music/playlist/',
+        url: 'http://127.0.0.1:8000/music/all/',
         data:{
           user_name: $.cookie('UserName')
         },

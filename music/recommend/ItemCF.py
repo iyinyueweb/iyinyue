@@ -1,7 +1,6 @@
 __author__ = 'jjZhu'
 import math
 import operator
-import sys
 
 
 # 计算物品间的相似度
@@ -122,12 +121,12 @@ def auto_norm(mat):
     return norm_mat
 
 
-def recommendation(train, user_id, similarity_mat, K):
+def recommendation(train, user_id, similarity_mat, k):
     rank = dict()
     history_item = train[user_id]  # 获取用户历史喜欢物品
     for i, pi in history_item.items():
         for j, wj in sorted(similarity_mat[i].items(),  # 获取相似物品并降序排序
-                            key=operator.itemgetter(1), reverse=True)[0:K]:
+                            key=operator.itemgetter(1), reverse=True)[0:k]:
             if j in history_item:  # 如果待推荐物品在该用户的历史物品中已出现，则不推荐
                 continue
             if j not in rank:
@@ -139,6 +138,11 @@ def recommendation(train, user_id, similarity_mat, K):
             rank[j]['weight'] += pi * wj  # 计算用户对物品j的兴趣
             rank[j][i]['reason'] = pi * wj
     return rank  # sorted(rank.items(), key=operator.itemgetter(1), reverse=True)
+
+
+# TODO
+def item_cf(train):
+    return train
 
 
 def test():

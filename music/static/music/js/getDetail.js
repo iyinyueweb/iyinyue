@@ -2,6 +2,7 @@
  * Created by Administrator on 2015/5/1 0001.
  */
 $(document).ready(function(){
+    var music_id = window.location.href.split('?')[1].split('=')[1];
     $.ajax({
          type: 'GET',
          url: 'http://127.0.0.1:8000/music/getDetail/',
@@ -9,7 +10,7 @@ $(document).ready(function(){
          contentType:"application/json",
          async:false,
          data:{
-           'music_id':1
+           'music_id':music_id
          },
          success: function(data){
              showMusicInfo(data)
@@ -28,7 +29,7 @@ $(document).ready(function(){
             data:{
                 comment_content: $('#comment_content').val(),
                 comment_user: $.cookie("UserName"),
-                comment_music_id: 1
+                comment_music_id: $('.col-sm-8 .panel').attr('music_id')
             },
             success: function(data){
                 alert(data+'comment successful');
