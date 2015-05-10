@@ -5,11 +5,11 @@ $(document).ready(function(){
     var value = $.cookie("UserName") == undefined ;
     var recommend_list = [];
     if(value){
-        window.location.href = 'http://127.0.0.1:8000/user/login/';
+        window.location.href = url+'/user/login/';
     }else{
         $.ajax({
             type: 'GET',
-            url: 'http://127.0.0.1:8000/music/recommend/',
+            url: url+'/music/recommend/',
             dateType:'json',
             contentType:"application/json",
             async:false,

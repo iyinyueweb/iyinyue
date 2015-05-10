@@ -25,8 +25,11 @@ urlpatterns = patterns('',
                        url(r'^getDetail/$', views.get_detail_by_music_id, name='getDetail'),
                        # 获取单曲评论
                        url(r'^getComments/$', views.get_comments, name='getComments'),
-
+                       # 添加评论
                        url(r'^addComment/$', views.add_comment, name='addComment'),
-
+                       # 根据播放列表id获取列表歌曲
+                       url(r'^getListSongById', views.get_song_by_list_id, name='getListSongById'),
+                       # 根据列表名获取列表歌曲
+                       url(r'^getListSongByName', views.get_songs_by_list_name, name='getListSongByName'),
 
                        )

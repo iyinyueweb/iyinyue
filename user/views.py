@@ -13,18 +13,38 @@ def profile(request):
 #  用户注册
 def register(request):
     if request.method == 'POST':
-        user = IUser()
         user_name = request.POST.get('user_name', None)
         user_email = request.POST.get('user_email', None)
         user_password = request.POST.get('user_password', None)
-
+        try:
+            user = IUser.objects.get(user_name=user_name)
+        except IUser.DoesNotExist:
+            # 用户不存在
+            user = IUser()
+        else:
+            # 用户已经存在
+            return HttpResponse(2)
         default_list = PlayList()  # 创建默认播放列表
-        default_list.play_list_name = u'默认播放列表'  # 默认播放列表名
-
+        default_list.play_list_name = u'默认列表'  # 默认播放列表名
         default_list.save()
+
+        favorite_list = PlayList()
+        favorite_list.play_list_name = u'我喜欢'
+        favorite_list.save()
+
+        history_list = PlayList()
+        history_list.play_list_name = u'历史记录'
+        history_list.save()
+
+        audition_list = PlayList()
+        audition_list.play_list_name = u'试听列表'
+        audition_list.save()
+
         user.save()
         user.play_list.add(default_list)
-
+        user.play_list.add(favorite_list)
+        user.play_list.add(history_list)
+        user.play_list.add(audition_list)
         user.user_name = user_name
         user.email = user_email
         user.password = hashlib.sha1(user_password.encode(encoding='utf-8')).hexdigest()
@@ -39,13 +59,13 @@ def register(request):
 def login(request):
     if request.method == 'POST':
         user_name = request.POST.get('user_name', None)  # 获取用户名
-        password = request.POST.get('user_name', None)
+        password = request.POST.get('user_password', None)
         try:
             user = IUser.objects.get(user_name=user_name)
         except IUser.DoesNotExist:
             raise Http404("User does not exist")
         if user.password != hashlib.sha1(password.encode(encoding='utf-8')).hexdigest():
-            HttpResponse("password error")
+            return HttpResponse("password error")
         # TODO return value
         user.last_time = timezone.now()
         user.save()

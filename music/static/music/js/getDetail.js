@@ -5,7 +5,7 @@ $(document).ready(function(){
     var music_id = window.location.href.split('?')[1].split('=')[1];
     $.ajax({
          type: 'GET',
-         url: 'http://127.0.0.1:8000/music/getDetail/',
+         url: url + '/music/getDetail/',
          dateType:'json',
          contentType:"application/json",
          async:false,
@@ -24,7 +24,7 @@ $(document).ready(function(){
             alert('内容为空');
         }
         $.ajax({
-            url:"http://127.0.0.1:8000/music/addComment/",
+            url:url+"/music/addComment/",
             type:"POST",
             data:{
                 comment_content: $('#comment_content').val(),
@@ -45,7 +45,7 @@ function showMusicInfo(music){
     var comments = [] ;
     $.ajax({
         type: 'GET',
-         url: 'http://127.0.0.1:8000/music/getComments/',
+         url: url+'/music/getComments/',
          dateType:'json',
          contentType:"application/json",
          async:false,
@@ -62,13 +62,14 @@ function showMusicInfo(music){
                                 '<img src="'+music['cover']+'" class="img-full m-b">'+
                             '</div>'+
                             '<div class="col-sm-7">'+
-                                '<h2 class="m-t-none text-black">'+music['title']+'</h2>'+
+                                '<h2 class="m-t-none text-black">歌曲名：'+music['title']+'</h2>'+
+                                 '<h2 class="m-t-none text-black">歌手：'+music['artist']+'</h2>'+
                         '<div class="m-b-lg">'+
                           '<a href="#" class="btn btn-info">播放</a> <a href="#" class="btn btn-default">'+comments.length+'</a>'+
                         '</div>'+
                         '<div>'+
-                          '标签: <a href="#" class="badge bg-light">Musik</a>' +
-                                '<a href="#" class="badge bg-light">Pashion</a>'+
+                          '标签: <a href="#" class="badge bg-light">添加</a>' +
+                                '<a href="#" class="badge bg-light">添加</a>'+
                         '</div>'+
                       '</div>'+
                     '</div>'+

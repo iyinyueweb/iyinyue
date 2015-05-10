@@ -5,7 +5,7 @@ $(document).ready(function(){
     var play_list =[];
     $.ajax({
          type: 'GET',
-         url: 'http://127.0.0.1:8000/music/all/',
+         url: url+'/music/all/',
          dateType:'json',
          contentType:"application/json",
          async:false,
@@ -31,7 +31,7 @@ $(document).ready(function(){
                           "<i class=\"icon-control-pause text-active\"></i>"+
                         "</a>"+
                         "<div class=\"clear text-ellipsis\">"+
-                          "<span>"+play_list[i]['title']+"</span>"+
+                          "<a href='"+url+"/detail/?music_id="+play_list[i]['id']+"'>"+play_list[i]['title']+"</a>"+
                           "<span class=\"text-muted\"> -- 04:35</span>"+
                         "</div>"+
                       "</li>" ;
@@ -57,7 +57,7 @@ $(document).ready(function(){
 function download_music(music_id){
     $.ajax({
         type: 'POST',
-        url: 'http://127.0.0.1:8000/music/download/',
+        url: url+'/music/download/',
         data:{
             music_id: music_id,
             user_name: $.cookie('UserName')
@@ -75,11 +75,11 @@ function download_music(music_id){
 function plus_to_list(music_id){
     $.ajax({
         type: 'POST',
-        url: 'http://127.0.0.1:8000/music/addToList/',
+        url: url+'/music/addToList/',
         data:{
             music_id: music_id,
             user_name: $.cookie('UserName'),
-            list_id: 1
+            list_name: '默认列表'
         },
         async:false,
         success: function(data){

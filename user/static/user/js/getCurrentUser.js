@@ -5,12 +5,12 @@ $(function () {
     var userName = $.cookie("UserName");
     var value = userName == undefined ;
     if(value){
-        window.location.href = 'http://127.0.0.1:8000/user/login/';
+        window.location.href = url+'/user/login/';
     }else{
         var user_info = '' ;
         $.ajax({
             type: 'GET',
-            url: 'http://127.0.0.1:8000/user/getUserInfo/?user_name='+userName,
+            url: url+'/user/getUserInfo/?user_name='+userName,
             dateType:'json',
             contentType:"application/json",
             async:false,
@@ -35,7 +35,7 @@ $(function () {
 function showPlayList(userName){
     $.ajax({
             type: 'GET',
-            url: 'http://127.0.0.1:8000/music/getPlaylist/?user_name='+userName,
+            url: url+'/music/getPlaylist/?user_name='+userName,
             dateType:'json',
             contentType:"application/json",
             async:false,

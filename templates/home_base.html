@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+<script type="text/javascript" src="{% static 'iyinyue/js/jPlayer/demo.js' %}"></script>
 {% block section %}
     <body class="">
     <section class="vbox">
@@ -133,7 +134,7 @@
                   </ul>
                   <ul class="nav text-sm" id="play_list">
                     <li class="hidden-nav-xs padder m-t m-b-sm text-xs text-muted">
-                      <span class="pull-right"><a href="#"><i class="icon-plus i-lg"></i></a></span>
+                      <span class="pull-right"></span>
                       播放列表
                     </li>
                       <!--  用户播放列表-->
@@ -192,4 +193,9 @@
     </section>
   </section>
     </body>
+
 {% endblock %}
+{% block script %}
+    <script type="text/javascript" src="{% static 'user/js/init.js' %}"></script>
+{% endblock %}
+

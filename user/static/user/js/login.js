@@ -4,7 +4,7 @@
 $(function () {
     $('#login').bind("click",function(){
         $.ajax({
-            url:"http://127.0.0.1:8000/user/login/",
+            url:url + "/user/login/",
             type:"POST",
             data:{
                 user_name: $('#user_name').val(),
@@ -13,7 +13,7 @@ $(function () {
             success: function(data){
                 if(data == 1){
                     $.cookie("UserName", $('#user_name').val(), {path:'/'});
-                    window.location.href="http://127.0.0.1:8000/index/";
+                    window.location.href=url+"/index/";
                 }
             }
         })

@@ -6,7 +6,7 @@ import datetime
 from iyinyue.utils import filedir, mp3reader, json4music
 from iyinyue import constant
 from user.models import *
-from music.recommend import coldStart, UserCF, ItemCF
+from music.recommend import coldStart
 import os
 
 
@@ -20,14 +20,14 @@ def get_detail_by_music_id(request):
         else:
             cover = constant.PROJECT_PATH + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
             if os.path.exists(cover):
-                cover = 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+                cover = constant.URL + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
             else:
-                cover = 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/default.jpg'
+                cover = constant.URL + '/static/iyinyue/mp3/cover/default.jpg'
             music_json = {
                 'id': music.id,
                 'title': music.song_name,
                 'artist': music.artist,
-                'mp3': music.path,
+                'mp3': music.path.replace('http://127.0.0.1:8000', constant.URL),
                 'poster': "images/m0.jpg",
                 'cover': cover
             }
@@ -49,6 +49,39 @@ def get_play_list(request):
     return HttpResponse(json.dumps(play_list_json), content_type='application/json')
 
 
+def get_song_by_list_id(request):
+    if request.method == 'GET':
+        list_id = request.GET.get('list_id', None)
+        try:
+            play_list = PlayList.objects.get(pk=list_id)
+        except PlayList.DoesNotExist:
+            return HttpResponse(0)
+        else:
+            music_json = []
+            play_times = play_list.play_time.all()
+            for play_time in play_times:
+                music = play_time.music
+                music_json.append(json4music.json4music(music))
+            return HttpResponse(json.dumps(music_json), content_type='application/json')
+
+
+def get_songs_by_list_name(request):
+    if request.method == 'GET':
+        user_name = request.GET.get('user_name', None)
+        list_name = request.GET.get('list_name', None)
+        try:
+            user = IUser.objects.get(user_name=user_name)
+        except IUser.DoesNotExist:
+            # TODO
+            return HttpResponse(0)
+        else:
+            music_json = []
+            play_list = user.play_list.get(play_list_name=list_name)
+            for play_time in play_list.play_time.all():
+                music_json.append(json4music.json4music(play_time.music))
+            return HttpResponse(json.dumps(music_json), content_type='application/json')
+
+
 # 获取数据库中所有歌曲
 def get_all(request):
     play_list = Music.objects.all()
@@ -58,7 +91,7 @@ def get_all(request):
             'id': music.id,
             'title': music.song_name,
             'artist': music.artist,
-            'mp3': music.path,
+            'mp3': music.path.replace('http://127.0.0.1:8000', constant.URL),
             'poster': "images/m0.jpg"
         }
         play_list_json.append(music_json)
@@ -67,32 +100,45 @@ def get_all(request):
 
 # 添加音樂到播放列表
 def add_to_playlist(request):
+    if request.method == 'GET':
+        return
     music_id = request.POST.get('music_id', None)
-    play_list_id = request.POST.get('list_id', None)
+    play_list_name = request.POST.get('list_name', None)
+    user_name = request.POST.get('user_name', None)
     # play_list = PlayList.objects.get(pk=1)  # TODO 获取播放列表
-    play_list = PlayList.objects.filter(pk=play_list_id, play_time__music__id=music_id)
+    user = IUser.objects.get(user_name=user_name)
+    try:
+        play_list = user.play_list.get(play_list_name=play_list_name)
     # user = IUser.objects.filter(play_list__id=1,
     #                             play_list__play_time__music__id=music_id)\
     #     .filter(user_name=user_name)  # 查找个用户是否已经添加了该歌曲
-    if not play_list.exists():  # 用户不存在，则添加该歌曲到用户的播放列表
+    except PlayList.DoesNotExist:  # 用户不存在，则添加该歌曲到用户的播放列表
         # user = IUser.objects.get(user_name=user_name)  # 获取用户
+        # TODO
+        return HttpResponse(1)
+    else:
         try:
             music = Music.objects.get(pk=music_id)  # 获取音乐
-            play_list = PlayList.objects.get(pk=play_list_id)  # 获取播放列表
-            play_time = PlayTime()
-            play_time.music = music
-            play_time.save()
-            play_list.play_time.add(play_time)
-            play_list.save()
-            music.popular += 1  # 播放次数+1
-            music.save()
-            return HttpResponse('successful')
+            try:
+                play_list.play_time.get(music=music)
+            except PlayTime.DoesNotExist:
+                play_time = PlayTime()
+                play_time.music = music
+                play_time.save()
+                play_list.play_time.add(play_time)
+                play_list.save()
+                music.popular += 1  # 播放次数+1
+                music.save()
+                return HttpResponse('successful')
+            else:
+                return HttpResponse('already added to you list')
         except Music.DoesNotExist:
             HttpResponse('音乐不存在')
-        except PlayList.DoesNotExist:
-            HttpResponse('播放列表不存在')
 
-    return HttpResponse('already added to you list')
+
+
+
+
 
 
 # 用户下载操作
@@ -262,7 +308,7 @@ def init_music(request):
                 music.year = str(value).strip()
             if 'comment' == k:
                 music.comment = str(value).strip()
-        music.path = file.replace(project_path, 'http://127.0.0.1:8000')
+        music.path = file.replace(project_path, constant.URL)
         music.save()
         if flag:
             music.category.add(category[0])
@@ -309,14 +355,14 @@ def get_music_by_genre(request):
         for music in musics:
             cover = constant.PROJECT_PATH + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
             if os.path.exists(cover):
-                cover = 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
+                cover = constant.URL + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
             else:
-                cover = 'http://127.0.0.1:8000/static/iyinyue/mp3/cover/default.jpg'
+                cover = constant.URL + '/static/iyinyue/mp3/cover/default.jpg'
             music_json = {
                 'id': music.id,
                 'title': music.song_name,
                 'artist': music.artist,
-                'mp3': music.path,
+                'mp3': music.path.replace('http://127.0.0.1:8000', constant.URL),
                 'cover': cover
             }
             play_list_json.append(music_json)

@@ -5,12 +5,22 @@ $(function () {
     var userName = $.cookie("UserName");
     var value = userName == undefined ;
     if(value){
-        window.location.href = 'http://127.0.0.1:8000/user/login/';
+        var arr = window.location.href.split('/');
+        var flag = true ;
+        if( arr[arr.length - 2] != 'register'){
+            flag = false ;
+        }
+        if( arr[arr.length - 2] != 'login'  ){
+            flag = false ;
+        }
+        if(flag){
+            window.location.href = url + '/user/login/';
+        }
     }else{
         var user_info = '' ;
         $.ajax({
             type: 'GET',
-            url: 'http://127.0.0.1:8000/user/getUserInfo/?user_name='+userName,
+            url: url + '/user/getUserInfo/?user_name='+userName,
             dateType:'json',
             contentType:"application/json",
             async:false,
@@ -35,16 +45,22 @@ $(function () {
 function showPlayList(userName){
     $.ajax({
             type: 'GET',
-            url: 'http://127.0.0.1:8000/music/getPlaylist/?user_name='+userName,
+            url: url+'/music/getPlaylist/?user_name='+userName,
             dateType:'json',
             contentType:"application/json",
             async:false,
             success: function(data){
                 var play_list = '';
+                var icon = '';
                 for(var i = 0; i < data.length; i ++){
+                    if(data[i]['name'] == '我喜欢'){
+                        icon = 'icon-heart'
+                    }else{
+                        icon = 'icon-music-tone'
+                    }
                     play_list += '<li>'+
-                                '<a href="#">'+
-                                '<i class="icon-music-tone icon"></i>'+
+                                '<a href="#" class="playlist" list_id='+data[i]['id']+'>'+
+                                '<i class="'+icon+' icon"></i>'+
                                 '<b class="badge bg-success dker pull-right">'+data[i]['count']+'</b>'+
                                 '<span>'+data[i]['name']+'</span>'+
                                 '</a>'+
@@ -55,11 +71,30 @@ function showPlayList(userName){
                     play_list
                 );
 
+                getListSong();
 
             }
         });
 }
 
+
+function getListSong(){
+
+
+    $('.playlist').click(function(){
+         var listId = $(this).attr('list_id');
+        alert(listId);
+        $.ajax({
+            type: 'GET',
+            url: url+'/music/getListSongById/?list_id='+listId,
+            dateType:'json',
+            contentType:"application/json",
+            success: function(data){
+                alert(data)
+            }
+        })
+    });
+}
 
 $('#logout').click(function () {
             alert("1111")

@@ -1,18 +1,7 @@
 $(document).ready(function(){
-    var play_list =[];
-    $.ajax({
-        type: 'GET',
-        url: 'http://127.0.0.1:8000/music/all/',
-        data:{
-          user_name: $.cookie('UserName')
-        },
-        dateType:'json',
-        contentType:"application/json",
-        async:false,
-        success: function(data){
-            play_list = data ;
-        }
-    });
+
+    var play_list = getSongsByListName( $.cookie('UserName'), '默认列表');
+
     var myPlaylist = new jPlayerPlaylist({
     jPlayer: "#jplayer_N",
     cssSelectorAncestor: "#jp_container_N"
@@ -51,8 +40,10 @@ $(document).ready(function(){
     if( !$this.hasClass('active') ){
       myPlaylist.pause();
     }else{
-      var i = Math.floor(Math.random() * (1 + 7 - 1));
-      myPlaylist.play(i);
+        var i = Math.floor(Math.random() * (1 + 7 - 1));
+        myPlaylist.play(i);
+        alert(i);
+
     }
     
   });
@@ -82,5 +73,4 @@ $(document).ready(function(){
     smoothPlayBar: true,
     keyEnabled: true
   });
-
 });

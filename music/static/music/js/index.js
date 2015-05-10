@@ -1,14 +1,13 @@
 /**
  * Created by JJZHU on 2015/4/22 0022.
  */
-var url = 'http://127.0.0.1:8000';
 
 $(document).ready(function(){
     var music_list =[];
     $.ajax({
          type: 'GET',
         // TODO
-         url: 'http://127.0.0.1:8000/music/getByGenre/',
+         url: url + '/music/getByGenre/',
          dateType:'json',
          contentType:"application/json",
          async:false,
@@ -69,7 +68,7 @@ function new_song(){
     $.ajax({
          type: 'GET',
         // TODO
-         url: 'http://127.0.0.1:8000/music/getByGenre/',
+         url: url+'/music/getByGenre/',
          dateType:'json',
          contentType:"application/json",
          async:false,
