@@ -40,17 +40,21 @@ def create_tree(data_set, min_support=1):
     freq_item_set = set(header_table.keys())  # key集合
     if len(freq_item_set) == 0:  # 没有符合条件的元素项
         return None, None  # 直接返回
-    for k in header_table:  # 初始化， [count, treeNode]， 数组[0]存储元素支持度，[1]存储的是一个树节点
+    # 初始化， [count, treeNode]，
+    # 数组[0]存储元素支持度，[1]存储的是一个树节点
+    for k in header_table:
         header_table[k] = [header_table[k], None]
     return_tree = TreeNode('null set', 1, None)  # 创建一个只有根节点的树
     for tran_set, count in data_set.items():  # 遍历数据中的所有元素集
         local_dict = {}  # 存储元素集中的元素
         for item in tran_set:  # 遍历元素集中的元素
-            if item in freq_item_set:  # 若元素集中的元素在符合条件集合中，即支持度大于最小支持度
+            # 判断元素集中的元素是否符合条件集合中，即支持度大于最小支持度
+            if item in freq_item_set:
                 local_dict[item] = header_table[item][0]  # 获取当前元素的支持度
         if len(local_dict) > 0:  # 非空
-            ordered_items = [v[0] for v in sorted(local_dict.items(),
-                                                  key=lambda p:p[1], reverse=True)]  # 按照支持度大小降序排序
+            # 按照支持度大小降序排序
+            ordered_items = [v[0] for v in sorted(
+                local_dict.items(), key=lambda p:p[1], reverse=True)]
             update_tree(ordered_items, return_tree, header_table, count)  # 更新树
     return return_tree, header_table
 
@@ -67,9 +71,11 @@ def update_tree(items, in_tree, header_table, count):
     else:  # 若不是
         in_tree.children[items[0]] = TreeNode(items[0], count, in_tree)  # 新建节点
         if header_table[items[0]][1] is None:  # 如果头指针表中对应节点的指针为空
-            header_table[items[0]][1] = in_tree.children[items[0]]  # 则将该元素的对应节点指针指向当前节点
+            # 则将该元素的对应节点指针指向当前节点
+            header_table[items[0]][1] = in_tree.children[items[0]]
         else:  # 否则
-            update_header(header_table[items[0]][1], in_tree.children[items[0]])  # 更新头指针表
+            update_header(header_table[items[0]][1],
+                          in_tree.children[items[0]])  # 更新头指针表
     if len(items) > 1:  # 若待更新元素集元素>1
         # 则截取1 - len(items) 元素 ， 递归调用树更新函数
         update_tree(items[1::], in_tree.children[items[0]], header_table, count)
@@ -104,7 +110,8 @@ def find_prefix_path(tree_node):
         prefix_path = []
         ascend_tree(tree_node, prefix_path)  # 获取上溯路径
         if len(prefix_path) > 1:  # 路径非空
-            condition_patterns[frozenset(prefix_path[1:])] = tree_node.count  # 记录模式基
+            # 记录模式基
+            condition_patterns[frozenset(prefix_path[1:])] = tree_node.count  
         tree_node = tree_node.node_link
     return condition_patterns
 

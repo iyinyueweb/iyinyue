@@ -14,15 +14,19 @@ def get_mp3_info(path):
     if 'APIC:' in tags:
         artwork = afile.tags['APIC:'].data  # 获取MP3里的图片信息
         #  专辑封面的存储路径
-        path = '../../static/iyinyue/mp3/cover/'+id3info['artist'][0]+'_'+id3info['title'][0]+'.jpg'
-        with open('F:/project/iyinyue/static/iyinyue/mp3/cover/'+id3info['artist'][0]+'_'+id3info['title'][0]+'.jpg', 'wb') as img:  # 写入图片数据
+        path = '../../static/iyinyue/mp3/cover/'+id3info['artist'][0].replace('/', '.')+'_'+id3info['title'][0]+'.jpg'
+        print(path)
+        with open('F:/project/iyinyue/static/iyinyue/mp3/cover/'
+                          + id3info['artist'][0].replace('/', '.') + '_'+id3info['title'][0].replace('/', '.')
+                          +'.jpg', 'wb') as img:  # 写入图片数据
             img.write(artwork)
     return id3info
 
 
 # 测试方法
 if __name__ == '__main__':
-    info = (get_mp3_info(str(u'F:\project\iyinyue\static\iyinyue\mp3\G.E.M.邓紫棋 - 泡沫.mp3').replace('\\', '/')))
+
+    info = (get_mp3_info(str(u'F:\project\iyinyue\static\iyinyue\mp3\摇滚\AC_DC - Anything Goes.mp3').replace('\\', '/')))
     for k, v in info.items():
         print(k, v)
 

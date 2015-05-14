@@ -18,20 +18,7 @@ def get_detail_by_music_id(request):
         except Music.DoesNotExist:
             HttpResponse('error')  # TODO
         else:
-            cover = constant.PROJECT_PATH + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
-            if os.path.exists(cover):
-                cover = constant.URL + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
-            else:
-                cover = constant.URL + '/static/iyinyue/mp3/cover/default.jpg'
-            music_json = {
-                'id': music.id,
-                'title': music.song_name,
-                'artist': music.artist,
-                'mp3': music.path.replace('http://127.0.0.1:8000', constant.URL),
-                'poster': "images/m0.jpg",
-                'cover': cover
-            }
-            return HttpResponse(json.dumps(music_json), content_type='application/json')
+            return HttpResponse(json.dumps(json4music.json4music(music)), content_type='application/json')
 
 
 # 获取登录用户的歌曲列表
@@ -84,17 +71,11 @@ def get_songs_by_list_name(request):
 
 # 获取数据库中所有歌曲
 def get_all(request):
+
     play_list = Music.objects.all()
     play_list_json = []
     for music in play_list:
-        music_json = {
-            'id': music.id,
-            'title': music.song_name,
-            'artist': music.artist,
-            'mp3': music.path.replace('http://127.0.0.1:8000', constant.URL),
-            'poster': "images/m0.jpg"
-        }
-        play_list_json.append(music_json)
+        play_list_json.append(json4music.json4music(music))
     return HttpResponse(json.dumps(play_list_json), content_type='application/json')
 
 
@@ -277,17 +258,17 @@ def init_music(request):
     path = project_path + '/static/iyinyue/mp3'
     all_files = filedir.print_path(path)
     for file in all_files:
-        flag = True
+        # flag = True
         if '.mp3' not in file:
             continue
         try:
-            music_category = file.split('/')[-2]
-            category = MusicCategory.objects.filter(music_category=music_category)
-            if not category.exists():
-                flag = False
-                category = MusicCategory()
-                category.music_category = music_category
-                category.save()
+            # music_category = file.split('/')[-2]
+            # category = MusicCategory.objects.filter(music_category=music_category)
+            # if not category.exists():
+            #     flag = False
+            #     category = MusicCategory()
+            #     category.music_category = music_category
+            #     category.save()
             info = mp3reader.get_mp3_info(file)
         except mutagen.mp3.HeaderNotFoundError:
             continue
@@ -308,12 +289,12 @@ def init_music(request):
                 music.year = str(value).strip()
             if 'comment' == k:
                 music.comment = str(value).strip()
-        music.path = file.replace(project_path, constant.URL)
+        music.path = file.replace(project_path, '')
         music.save()
-        if flag:
-            music.category.add(category[0])
-        else:
-            music.category.add(category)
+        # if flag:
+        #     music.category.add(category[0])
+        # else:
+        #     music.category.add(category)
         music.save()
 
 

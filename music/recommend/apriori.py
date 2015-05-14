@@ -64,11 +64,12 @@ def apriori_gen(freq_set, k):
     return return_list
 
 
-#
+# apriori算法实现
 def apriori(data_set, min_support=0.5):
     c1 = create_c1(data_set)  # 创建只有一项的候选项集合
     data_format = list(map(set, data_set))  # 格式化为集合
-    l1, support_data = scan_data(data_format, c1, min_support)  # 过滤项数为1的符合最小支持度的候选项
+    # 过滤项数为1的符合最小支持度的候选项
+    l1, support_data = scan_data(data_format, c1, min_support)  
     result_list = [l1]  # 保存候选项
     k = 2
     while len(result_list[k-2]) > 2:
@@ -89,13 +90,16 @@ def generate_rules(freq_set_list, support_data, min_conf=0.7):
     big_rule_list = []  # 保存关联规则
     for i in range(1, len(freq_set_list)):  # 只读取项数 >= 2 的集合
         for freq_set in freq_set_list[i]:  # 遍历集合中的频繁集
-            h1 = [frozenset([item]) for item in freq_set]  # 获取频繁集中项为1的子集
+            # 获取频繁集中项为1的子集
+            h1 = [frozenset([item]) for item in freq_set]  
             if i > 1:  # 如果当前频繁集中频繁项的项数>2
                 # 进行
-                rules_from_conseq(freq_set, h1, support_data, big_rule_list, min_conf)
+                rules_from_conseq(freq_set, h1, support_data,
+                                  big_rule_list, min_conf)
             else:
                 # 计算可信度
-                calc_conf(freq_set, h1, support_data, big_rule_list, min_conf)
+                calc_conf(freq_set, h1, support_data,
+                          big_rule_list, min_conf)
     return big_rule_list
 
 

@@ -9,13 +9,13 @@ class MusicCategory(models.Model):
 
 # 歌曲信息表
 class Music(models.Model):
-    song_name = models.CharField(max_length=100)  # 歌曲名
-    album = models.CharField(max_length=100, blank=True, null=True)  # 专辑
+    song_name = models.CharField(max_length=500)  # 歌曲名
+    album = models.CharField(max_length=1000, blank=True, null=True)  # 专辑
     year = models.CharField(max_length=100, blank=True, null=True)  # 年代
-    artist = models.CharField(max_length=100, blank=True, null=True)  # 歌手
-    comment = models.CharField(max_length=100, blank=True, null=True)  # 备注
+    artist = models.CharField(max_length=500, blank=True, null=True)  # 歌手
+    comment = models.CharField(max_length=1000, blank=True, null=True)  # 备注
     genre = models.CharField(max_length=100, blank=True, null=True)  # 类型
-    path = models.CharField(max_length=100, blank=True, null=True)  # 文件路径
+    path = models.CharField(max_length=1000, blank=True, null=True)  # 文件路径
     category = models.ManyToManyField(MusicCategory, blank=True, null=True, related_name="category")  # 分类
     popular = models.IntegerField(default=0)  # 流行度
     unpopular = models.IntegerField(default=0)  # 不受欢迎度

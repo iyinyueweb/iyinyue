@@ -27,9 +27,7 @@ def user_similarity(train):
                     same_item_num[user] = dict()
                 if v not in same_item_num[user]:
                     same_item_num[user][v] = 0
-                same_item_num[user][v] += 1 / math.log(1 + len(user))  # 原公式为：same_item_num[user][v] += 1
-                # 改进后的 same_item_num[user][v] += 1 / math.log(1 + len(user))
-                # 降低热门物品对用户间的相似度影响
+                same_item_num[user][v] += 1
     similarity = dict()  # 存储用户相似度
     for user, related_user in same_item_num.items():
         for v, cuv in related_user.items():
@@ -42,10 +40,12 @@ def user_similarity(train):
                 similarity[user] = dict()
             if v not in similarity[user]:
                 similarity[user][v] = 0.0
-            similarity[user][v] = cuv / math.sqrt(user_item_num[user] * user_item_num[v])
+            similarity[user][v] = cuv / math.sqrt(
+                user_item_num[user] * user_item_num[v])
     return similarity
 
 
+# 改进后的相似度计算方法
 def user_similarity2(train):
     item_users = dict()  # 物品与用户的对应表
     for user, items in train.items():  # 遍历所有用户及相关物品
@@ -68,9 +68,10 @@ def user_similarity2(train):
                     same_item_num[user] = dict()
                 if v not in same_item_num[user]:
                     same_item_num[user][v] = 0
-                same_item_num[user][v] += 1 / math.log(1 + len(user))  # 原公式为：same_item_num[user][v] += 1
+                # 原公式为：same_item_num[user][v] += 1
                 # 改进后的 same_item_num[user][v] += 1 / math.log(1 + len(user))
                 # 降低热门物品对用户间的相似度影响
+                same_item_num[user][v] += 1 / math.log(1 + len(user))
     similarity = dict()  # 存储用户相似度
     for user, related_user in same_item_num.items():
         for v, cuv in related_user.items():
@@ -83,7 +84,8 @@ def user_similarity2(train):
                 similarity[user] = dict()
             if v not in similarity[user]:
                 similarity[user][v] = 0.0
-            similarity[user][v] = cuv / math.sqrt(user_item_num[user] * user_item_num[v])
+            similarity[user][v] = cuv / math.sqrt(
+                user_item_num[user] * user_item_num[v])
     return similarity
 
 
