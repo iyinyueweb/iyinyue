@@ -2,7 +2,7 @@ from django.http import *
 import json
 import mutagen.mp3
 import datetime
-
+import random
 from iyinyue.utils import filedir, mp3reader, json4music
 from iyinyue import constant
 from user.models import *
@@ -71,8 +71,9 @@ def get_songs_by_list_name(request):
 
 # 获取数据库中所有歌曲
 def get_all(request):
-
-    play_list = Music.objects.all()
+    start = random.randint(0, Music.objects.all().count())
+    end = random.randint(start+10, start + 20)
+    play_list = Music.objects.all()[start:end]
     play_list_json = []
     for music in play_list:
         play_list_json.append(json4music.json4music(music))
@@ -115,11 +116,6 @@ def add_to_playlist(request):
                 return HttpResponse('already added to you list')
         except Music.DoesNotExist:
             HttpResponse('音乐不存在')
-
-
-
-
-
 
 
 # 用户下载操作
@@ -252,10 +248,9 @@ def comment_music(request):
 
 
 # 批量添加音乐
-def init_music(request):
+def init_music(request, file_name):
     project_path = constant.PROJECT_PATH
-
-    path = project_path + '/static/iyinyue/mp3'
+    path = project_path + '/static/iyinyue/mp3/'+file_name
     all_files = filedir.print_path(path)
     for file in all_files:
         # flag = True
@@ -323,12 +318,43 @@ def recommend(request):
     return HttpResponse('method error')
 
 
+# 音乐专辑搜索
+# param:
+#   search_content:搜索内容
+#
+def search_music(request):
+    if request.method == 'GET':
+        return_json = []
+        musics = []
+        search_content = request.GET.get('search_content', None)
+        filter_by_song_name = Music.objects.filter(song_name__icontains=search_content)
+        for music in filter_by_song_name:
+            if music not in musics:
+                musics.append(music)
+        filter_by_album = Music.objects.filter(album__icontains=search_content)
+        for music in filter_by_album:
+            if music not in musics:
+                musics.append(music)
+        filter_by_artist = Music.objects.filter(artist__icontains=search_content)
+        for music in filter_by_artist:
+            if music not in musics:
+                musics.append(music)
+        for music in musics:
+            return_json.append(json4music.json4music(music))
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
+
+
 # 根据风格类型来获取音乐列表
 # GET
 def get_music_by_genre(request):
     if request.method == 'GET':
+        musics = []
         try:
-            musics = Music.objects.filter(genre=request.GET.get('genres', None))[25:45]
+            total = Music.objects.all().count()
+            for i in range(20):
+                random_index = random.randint(1, total)
+                music = Music.objects.all()[random_index-1]
+                musics.append(music)
         except(Music.DoesNotExist, IUser.DoesNotExist):
             return HttpResponse('failed')
         play_list_json = []

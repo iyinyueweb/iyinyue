@@ -29,9 +29,9 @@
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-btn">
-              <button type="submit" class="btn btn-sm bg-white btn-icon rounded"><i class="fa fa-search"></i></button>
+              <button type="submit" class="btn btn-sm bg-white btn-icon rounded" id="search_music"><i class="fa fa-search"></i></button>
             </span>
-            <input type="text" class="form-control input-sm no-border rounded" placeholder="搜索音乐、专辑.....">
+            <input type="text" class="form-control input-sm no-border rounded" placeholder="搜索音乐、专辑....." id="music_or_album">
           </div>
         </div>
       </form>
@@ -99,17 +99,17 @@
       </div>
     </header>
     <section>
-      <section class="hbox stretch">
+        <section class="hbox stretch">
         <!-- .aside -->
-        <aside class="bg-black dk nav-xs aside hidden-print" id="nav">
-          <section class="vbox">
+            <aside class="bg-black dk nav-xs aside hidden-print" id="nav">
+                <section class="vbox">
             <section class="w-f-md scrollable">
               <div class="slim-scroll" data-height="auto" data-disable-fade-out="true" data-distance="0" data-size="10px" data-railOpacity="0.2">
                 <!-- nav -->
                 <nav class="nav-primary hidden-xs">
                   <ul class="nav bg clearfix">
                     <li class="hidden-nav-xs padder m-t m-b-sm text-xs text-muted">
-                      Discover
+                      发现
                     </li>
                     <li>
                       <a href="{% url 'index' %}">
@@ -185,12 +185,12 @@
           </section>
 
 
-        </aside>
-          {% block content %}
-          {% endblock %}
-      </section>
+            </aside>
+            {% block content %}
+            {% endblock %}
+        </section>
     </section>
-  </section>
+    </section>
     </body>
 
 {% endblock %}

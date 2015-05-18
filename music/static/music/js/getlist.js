@@ -31,7 +31,7 @@ $(document).ready(function(){
                           "<i class=\"icon-control-pause text-active\"></i>"+
                         "</a>"+
                         "<div class=\"clear text-ellipsis\">"+
-                          "<a href='"+url+"/detail/?music_id="+play_list[i]['id']+"'>"+play_list[i]['title']+"</a>"+
+                          "<a href='"+url+"/detail/?music_id="+play_list[i]['id']+"' target='blank'>"+play_list[i]['title']+"</a>"+
                           "<span class=\"text-muted\"> -- 04:35</span>"+
                         "</div>"+
                       "</li>" ;

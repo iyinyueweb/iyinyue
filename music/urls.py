@@ -32,4 +32,5 @@ urlpatterns = patterns('',
                        # 根据列表名获取列表歌曲
                        url(r'^getListSongByName', views.get_songs_by_list_name, name='getListSongByName'),
 
+                       url(r'^searchMusic', views.search_music, name='searchMusic'),
                        )

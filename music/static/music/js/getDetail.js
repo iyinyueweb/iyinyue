@@ -46,7 +46,7 @@ function showMusicInfo(music){
     $.ajax({
         type: 'GET',
          url: url+'/music/getComments/',
-         dateType:'json',
+         dataType:'json',
          contentType:"application/json",
          async:false,
          data:{

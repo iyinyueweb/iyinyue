@@ -41,7 +41,7 @@
 			$data.update && setTimeout(function() {
 		        $this.data('easyPieChart').update(100 - $value);
 		    }, $data.update);
-		}
+		};
 			$(this).easyPieChart($data);
 		});
 	};

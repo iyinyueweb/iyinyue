@@ -14,6 +14,7 @@ def json4music(music):
         'id': music.id,
         'title': music.song_name,
         'artist': music.artist,
+        'album': music.album,
         'mp3': constant.URL + music.path,
         'poster': "images/m0.jpg",
         'cover': cover

@@ -11,7 +11,7 @@ $(function () {
         $.ajax({
             type: 'GET',
             url: url+'/user/getUserInfo/?user_name='+userName,
-            dateType:'json',
+            dataType:'json',
             contentType:"application/json",
             async:false,
             success: function(data){
