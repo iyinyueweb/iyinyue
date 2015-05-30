@@ -3,6 +3,10 @@ __doc__ = 'K-均值聚类支持'
 
 import numpy as np
 from math import *
+from pylab import *
+import time
+
+color_list = ['red', 'blue', 'yellow', 'green', 'black', 'black', 'black']
 
 
 # 计算两个向量的欧式距离
@@ -53,8 +57,21 @@ def kmeans(data_set, k, dist_measure=dist_eclud, create_center=random_center):
                 cluster_ss[i, :] = min_index, min_dist ** 2  # 更新族心索引与距离
         # 更新族心位置
         for cent in range(k):
-            cluster = data_set[np.nonzero(cluster_ss[:, 0].A == cent)[0]]  
+            cluster = data_set[np.nonzero(cluster_ss[:, 0].A == cent)[0]]
             centroids[cent, :] = np.mean(cluster, axis=0)  # 更新族中心
+        #     scatter(centroids[cent, 0], centroids[cent, 1], c='black')
+        #     annotate(u'旧中心点'+str(cent), xy=(centroids[cent, 0], centroids[cent, 1]),
+        #              xytext=(centroids[cent, 0]-2, centroids[cent, 1]-2), fontsize=12,
+        #              arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
+        #     centroids[cent, :] = np.mean(cluster, axis=0)  # 更新族中心
+        # #
+        #     scatter(cluster[:, 0], cluster[:, 1], c=color_list[cent])
+        #     scatter(centroids[cent, 0], centroids[cent, 1], c='black', label='cluster'+str(cent))
+        #     annotate(u'新中心点'+str(cent), xy=(centroids[cent, 0], centroids[cent, 1]),
+        #              xytext=(centroids[cent, 0]-2, centroids[cent, 1]-2), fontsize=12,
+        #              arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
+        # legend(loc='upper left')
+        # show()
     return centroids, cluster_ss
 
 
@@ -77,19 +94,41 @@ def binary_kmeans(data_set, k, dist_measure=dist_eclud):
         cluster_ss[i, 1] = dist_measure(
             np.mat(centroid0), data_set[i, :]) ** 2  # 计算各点距簇中心的距离
     while len(center_list) < k:
+        # ylim(-8, 8)
+        # for i in range(len(center_list)):
+        #     cluster_mat = data_set[np.nonzero(cluster_ss[:, 0].A == i)[0], :]
+        #     scatter(cluster_mat[:, 0], cluster_mat[:, 1], c=color_list[i], label='cluster'+str(i))
+        # for i in range(len(center_list)):
+        #
+        #     scatter(np.mat(center_list)[i, 0], np.mat(center_list)[i, 1], c=color_list[i], marker='*')
+        #     annotate(u'中心点'+str(i), xy=(np.mat(center_list)[i, 0], np.mat(center_list)[i, 1]),
+        #              xytext=(np.mat(center_list)[i, 0]-2, np.mat(center_list)[i, 1]-2), fontsize=12,
+        #              arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
+        # legend(loc='upper left')
+        # show()
+        # time.sleep(2)
         lowest_sse = np.inf  # 最小误差平方和
         for i in range(len(center_list)):
             # 获取属于当前簇的向量
             current_cluster_index = data_set[np.nonzero(
                 cluster_ss[:, 0].A == i)[0], :]
+            if current_cluster_index.__len__() == 0:
+                continue
             centroid_mat, split_cluster_ss = kmeans(
-                current_cluster_index, 2, dist_measure)  # 二分聚类
+                current_cluster_index, 2, dist_measure)
+
+            for j in range(3):
+                temp_centroid_mat, temp_cluster = kmeans(
+                    current_cluster_index, 2, dist_measure)
+                if np.sum(temp_cluster[:, 1]) < np.sum(split_cluster_ss[:, 1]):
+                    centroid_mat, split_cluster_ss = temp_centroid_mat, temp_cluster
             # 获取当前划分簇的误差平方和
             sse_of_split = np.sum(split_cluster_ss[:, 1])
             # 计算为被划分的误差
             sse_of_not_split = np.sum(
                 cluster_ss[np.nonzero(cluster_ss[:, 0].A != i)[0], 1])
-            if sse_of_split + sse_of_not_split < lowest_sse:
+
+            if (sse_of_split + sse_of_not_split) < lowest_sse:
                 # 若一分为二的总误差小于最小误差
                 best_center_to_split_index = i  # 记录最佳划分索引
                 best_new_centroids = centroid_mat  # 记录最佳划分中心
@@ -110,6 +149,34 @@ def binary_kmeans(data_set, k, dist_measure=dist_eclud):
     return np.mat(center_list), cluster_ss
 
 
+# 计算轮廓系数
+def sc(data_set, cluster_result, k):
+    all_sc = 0.
+    for i in range(k):
+        curr_cluster = data_set[np.nonzero(cluster_result[:, 0].A == i)[0]]
+        n = np.shape(curr_cluster)[0]
+        for j in range(n):
+            b_i = np.inf
+            dist_sum = 0.
+            for t in range(n):
+                dist_sum += dist_eclud(curr_cluster[j], curr_cluster[t])
+            a_i = dist_sum/n-1
+            for p in range(k):
+                if p != i:
+                    curr_out_cluster = data_set[np.nonzero(cluster_result[:, 0].A == p)[0]]
+                    if np.shape(curr_out_cluster)[0] == 0:
+                        continue
+                    out_dist_sum = 0.
+                    for point in range(np.shape(curr_out_cluster)[0]):
+                        out_dist_sum += dist_eclud(curr_cluster[j], curr_out_cluster[point])
+                    curr_bi = out_dist_sum/np.shape(curr_out_cluster)[0]
+                    if curr_bi < b_i:
+                        b_i = curr_bi
+            all_sc += (b_i - a_i)/np.max([a_i, b_i])
+        print(all_sc)
+        return all_sc/np.shape(data_set)[0]
+
+
 # 加载测试数据集
 def load_data_set(file_name):
     data_mat = []  # 数据矩阵
@@ -121,17 +188,50 @@ def load_data_set(file_name):
     return data_mat
 
 
-def test():
+def test1():
     # data_mat = np.mat(load_data_set('data/testSet.txt'))
     # centroids, cluster_assment = kmeans(data_mat, 2)
     # print(centroids)
     # print(cluster_assment)
     # print('---------------------------------------------')
-    data_mat = np.mat(load_data_set('data/testSet2.txt'))
-    centroids, cluster_assment = binary_kmeans(data_mat, 3)
-    print(centroids)
+    data_set = np.mat(load_data_set('data/kmeans/testSet2.txt'))
+    # 画图
+    ylim(-8, 8)
+    scatter(data_set[:, 0].flatten().A[0], data_set[:, 1].flatten().A[0], c='blue', label=u'待聚类数据集', linewidths=1,)
+    legend(loc='upper left')
+    show()
+    x = []
+    y = []
+    for k in range(2, 8):
+        center_list, cluster_ss = binary_kmeans(data_set, k)
+        ylim(-8, 8)
+        for i in range(k):
+            cluster_mat = data_set[np.nonzero(cluster_ss[:, 0].A == i)[0], :]
+            scatter(cluster_mat[:, 0], cluster_mat[:, 1], c=color_list[i], label='cluster'+str(i))
+        for i in range(len(center_list)):
+            scatter(np.mat(center_list)[i, 0], np.mat(center_list)[i, 1], c=color_list[i], marker='*')
+            annotate(u'中心点'+str(i), xy=(np.mat(center_list)[i, 0], np.mat(center_list)[i, 1]),
+                     xytext=(np.mat(center_list)[i, 0]-2, np.mat(center_list)[i, 1]-2), fontsize=12,
+                     arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
+        legend(loc='upper left')
+        print(sc(data_set, cluster_ss, k))
+        x.append(k)
+        y.append(sc(data_set, cluster_ss, k))
+        show()
+    plot(x, y)
+    show()
+
+
+    # print(centroids)
+    # print(cluster_assment)
     # print(cluster_assment)
     # print(dist_eclud(data_mat[0], data_mat[1]))
 
+
+def test2():
+    data_set = np.mat(load_data_set('data/kmeans/testSet.txt'))
+    centroids, cluster_ss = kmeans(data_set, 4)
+    print("test2")
+
 if __name__ == '__main__':
-    test()
+    test1()

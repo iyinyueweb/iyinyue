@@ -25,7 +25,8 @@ $(document).ready(function(){
                       '<div class="item">'+
                         '<div class="pos-rlt">'+
                           '<div class="bottom">'+
-                            '<span class="badge bg-info m-l-sm m-b-sm">03:20</span>'+
+            //<!-- 时间-->
+                            '<span class="badge bg-info m-l-sm m-b-sm"></span>'+
                           '</div>'+
                           '<div class="item-overlay opacity r r-2x bg-black">'+
                             '<div class="text-info padder m-t-sm text-sm">'+

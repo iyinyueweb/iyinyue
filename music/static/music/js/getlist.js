@@ -32,7 +32,7 @@ $(document).ready(function(){
                         "</a>"+
                         "<div class=\"clear text-ellipsis\">"+
                           "<a href='"+url+"/detail/?music_id="+play_list[i]['id']+"' target='blank'>"+play_list[i]['title']+"</a>"+
-                          "<span class=\"text-muted\"> -- 04:35</span>"+
+                          "<span class=\"text-muted\">__"+play_list[i]['artist']+"</span>"+
                         "</div>"+
                       "</li>" ;
     }

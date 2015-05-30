@@ -71,11 +71,20 @@ def get_songs_by_list_name(request):
 
 # 获取数据库中所有歌曲
 def get_all(request):
-    start = random.randint(0, Music.objects.all().count())
-    end = random.randint(start+10, start + 20)
-    play_list = Music.objects.all()[start:end]
+    musics = []
+    try:
+        total = Music.objects.filter(artist__icontains='林俊杰')
+        for i in range(20):
+            # random_index = random.randint(1, total)
+            # music = Music.objects.all()[random_index-1]
+            musics.append(total[i])
+    except Music.DoesNotExist:
+        pass
+    # start = random.randint(0, Music.objects.all().count())
+    # end = random.randint(start+10, start + 20)
+    # play_list = Music.objects.all()[start:end]
     play_list_json = []
-    for music in play_list:
+    for music in musics:
         play_list_json.append(json4music.json4music(music))
     return HttpResponse(json.dumps(play_list_json), content_type='application/json')
 
@@ -350,10 +359,10 @@ def get_music_by_genre(request):
     if request.method == 'GET':
         musics = []
         try:
-            total = Music.objects.all().count()
+            total = Music.objects.filter(artist__icontains='林俊杰').all().count()
             for i in range(20):
                 random_index = random.randint(1, total)
-                music = Music.objects.all()[random_index-1]
+                music = Music.objects.filter(artist__icontains='林俊杰').all()[random_index-1]
                 musics.append(music)
         except(Music.DoesNotExist, IUser.DoesNotExist):
             return HttpResponse('failed')

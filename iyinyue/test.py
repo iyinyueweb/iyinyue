@@ -56,7 +56,7 @@ def list_listen_thread(thread_name, delay):
         except PlayTime.DoesNotExist:
             hist_play_list.play_time.add(play_time)
             hist_play_list.save()
-        t = random.randint(120, 360)
+        t = random.randint(10, 20)
         time.sleep(t)
         print(t)
 
@@ -99,8 +99,8 @@ def start_listen_thread():
     # _thread.start_new_thread(listen_thread, ('thread_1', 3 * 60, ))
     # _thread.start_new_thread(listen_thread, ('thread_2', 3 * 60, ))
     # _thread.start_new_thread(listen_thread, ('thread_3', 3 * 60, ))
-    # _thread.start_new_thread(listen_thread, ('thread_4', 3 * 60, ))
-    # _thread.start_new_thread(listen_thread, ('thread_5', 3 * 60, ))
+    _thread.start_new_thread(listen_thread, ('thread_4', 3 * 60, ))
+    _thread.start_new_thread(listen_thread, ('thread_5', 3 * 60, ))
     _thread.start_new_thread(list_listen_thread, ('thread_6', 3 * 60, ))
     _thread.start_new_thread(list_listen_thread, ('thread_7', 3 * 60, ))
     _thread.start_new_thread(list_listen_thread, ('thread_8', 3 * 60, ))
