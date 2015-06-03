@@ -116,10 +116,11 @@ def binary_kmeans(data_set, k, dist_measure=dist_eclud):
                 continue
             centroid_mat, split_cluster_ss = kmeans(
                 current_cluster_index, 2, dist_measure)
-
-            for j in range(3):
+            # 循环调用kmeans(k=2)函数
+            for j in range(10):
                 temp_centroid_mat, temp_cluster = kmeans(
                     current_cluster_index, 2, dist_measure)
+                # 取划分结果误差和最小的划分结果
                 if np.sum(temp_cluster[:, 1]) < np.sum(split_cluster_ss[:, 1]):
                     centroid_mat, split_cluster_ss = temp_centroid_mat, temp_cluster
             # 获取当前划分簇的误差平方和

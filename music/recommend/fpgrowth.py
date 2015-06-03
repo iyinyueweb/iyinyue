@@ -256,7 +256,7 @@ def find_prefix_path(tree_node):
         tree_node = tree_node.node_link
     return condition_patterns
 
-
+# 递归创建条件树，查找频繁项集
 def mine_tree(in_tree, header_table, min_support, prefix, freq_item_list):
     ordered_items = [item[0] for item in sorted(header_table.items(),
                                                 key=lambda p:p[0])]  # 升序

@@ -4,14 +4,17 @@
 $(document).ready(function(){
     var play_list =[];
     $.ajax({
-         type: 'GET',
-         url: url+'/music/all/',
-         dateType:'json',
-         contentType:"application/json",
-         async:false,
-         success: function(data){
-             play_list = data ;
-         }
+            type: 'GET',
+            url: url+'/music/recommend/',
+            dateType:'json',
+            contentType:"application/json",
+            async:false,
+            data:{
+              'user_name': $.cookie("UserName")
+            },
+            success: function(data){
+                play_list = data;
+            }
     });
 
     var list = "";

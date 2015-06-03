@@ -64,19 +64,40 @@ def show_point():
 
 
 def show_bar_shape():
-    n = 12
-    X = np.arange(n)
-    Y1 = (1-X/float(n)) * np.random.uniform(0.5, 1.0, n)
-    Y2 = (1-X/float(n)) * np.random.uniform(0.5, 1.0, n)
+    x1 = [0, 2, 4]
+    x2 = [0.5, 2.5, 4.5]
+    y1 = [0.61, 0.32, 0.58]
+    y2 = [0.68, 0.54, 0.71]
+    lab = [u'准确率', u'覆盖率', u'多样性']
+    title(u'相似度计算改进前后的各指标对比直方图')
+    bar(x1, y1, facecolor='#9999ff', edgecolor='white', width=0.5, label='改进前')
+    bar(x2, y2, facecolor='#ff8888', edgecolor='white', width=0.5, label='改进后')
 
-    bar(X, +Y1, facecolor='#9999ff', edgecolor='white')
-    bar(X, -Y2, facecolor='#ff9999', edgecolor='white')
-
-    for x, y in zip(X, Y1):
-        text(x+0.4, y+0.05, '%.2f' % y, ha='center', va='bottom')
-
-    ylim(-1.25, +1.25)
+    for x, y in zip(x1, y1):
+        text(x+0.25, y+0.05, '%.2f' % y, ha='center', va='bottom')
+    for x, y in zip(x2, y2):
+        text(x+0.25, y+0.05, '%.2f' % y, ha='center', va='bottom')
+    i = 0
+    for x, y in zip(x1, y1):
+        text(x+0.5, -0.05, '%s' % lab[i], ha='center', va='bottom')
+        i += 1
+    ylim(0, 1)
+    legend(loc='upper left')
     show()
+
+
+def show_bar_shape2():
+    import numpy as np
+    import matplotlib.pyplot as plt
+    x = np.arange(0, 1000, 0.5)
+    y = np.random.rand(2000)*10
+    n, bins, patches = plt.hist(y, 50, normed=1, alpha=0.8)
+    plt.title('Hist of Y')
+    plt.xlabel('Smarts')
+    plt.ylabel('NormProbability')
+    plt.text(2, 0.12, '$\mu=10,\\sigma=20$')
+    plt.grid(True)
+    plt.show()
 
 
 def show_contour():
@@ -123,8 +144,8 @@ def show_3d():
 if __name__ == '__main__':
     # show_sin_cos()
     # show_normal_graph()
-    show_point()
-    # show_bar_shape()
+    # show_point()
+    show_bar_shape()
     # show_contour()
     # show_polar()
     # show_3d()

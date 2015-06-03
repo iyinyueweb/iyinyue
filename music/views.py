@@ -359,11 +359,12 @@ def get_music_by_genre(request):
     if request.method == 'GET':
         musics = []
         try:
-            total = Music.objects.filter(artist__icontains='林俊杰').all().count()
-            for i in range(20):
-                random_index = random.randint(1, total)
-                music = Music.objects.filter(artist__icontains='林俊杰').all()[random_index-1]
-                musics.append(music)
+            # total = Music.objects.filter(artist__icontains='林俊杰').all().count()
+            musics = Music.objects.filter(artist__icontains='林俊杰').all()[25:59]
+            # for i in range(20):
+            #     random_index = random.randint(1, total)
+            #     music = Music.objects.filter(artist__icontains='林俊杰').all()[random_index-1]
+            #     musics.append(music)
         except(Music.DoesNotExist, IUser.DoesNotExist):
             return HttpResponse('failed')
         play_list_json = []

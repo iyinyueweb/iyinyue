@@ -36,7 +36,7 @@ $(document).ready(function(){
                         "          <i class=\"icon-close\"></i>"+
                         "          </div></td><td>"
                         +data[i]['artist']+"</td><td>"
-                        +data[i]['title']+"</td></tr>";
+                        +data[i]['album']+"</td></tr>";
                     }
                     content+=tbodyContent+"</tbody></table></div>";
                     $("#content").html(content);
