@@ -16,8 +16,23 @@ $(document).ready(function(){
                 play_list = data;
             }
     });
-
+    var most = '';
     var list = "";
+    $.ajax({
+            type: 'GET',
+            url: url+'/music/getMost/',
+            dateType:'json',
+            contentType:"application/json",
+            async:false,
+            data:{
+              'user_name': $.cookie("UserName")
+            },
+            success: function(data){
+                most = data;
+            }
+    });
+    $('.wrapper-lg').append('<span class="pull-right text-sm"></span>'+
+                        '<span class="h3 font-thin">最近你在听"'+most+'",你可能还喜欢....</span>');
     for(var i = 0; i < play_list.length ; i ++){
         list += "<li class=\"list-group-item\" data-orign="+play_list[i]['id']+">"+
                 "        <div class=\"pull-right m-l\">"+

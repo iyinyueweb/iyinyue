@@ -33,4 +33,10 @@ urlpatterns = patterns('',
                        url(r'^getListSongByName', views.get_songs_by_list_name, name='getListSongByName'),
 
                        url(r'^searchMusic', views.search_music, name='searchMusic'),
+                       # 获取相似歌曲
+                       url(r'^getSimilarity', views.get_similarity_musics, name='getSimilarity'),
+
+                       url(r'^getMusicTags', views.get_music_tags, name='getMusicTags'),
+
+                       url(r'^getMost', views.get_most, name='getMost')
                        )

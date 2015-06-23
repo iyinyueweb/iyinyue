@@ -73,17 +73,19 @@ def get_songs_by_list_name(request):
 def get_all(request):
     musics = []
     try:
-        total = Music.objects.filter(artist__icontains='林俊杰')
+        total = Music.objects.all().conut()  # (artist__icontains='林俊杰')
         for i in range(20):
-            # random_index = random.randint(1, total)
-            # music = Music.objects.all()[random_index-1]
-            musics.append(total[i])
+            random_index = random.randint(1, total)
+            music = Music.objects.all()[random_index-1]
+            musics.append(music)
     except Music.DoesNotExist:
         pass
     # start = random.randint(0, Music.objects.all().count())
     # end = random.randint(start+10, start + 20)
     # play_list = Music.objects.all()[start:end]
     play_list_json = []
+    play_list_json.append(json4music.json4music(Music.objects.get(pk=16380)))
+    play_list_json.append(json4music.json4music(Music.objects.get(pk=16383)))
     for music in musics:
         play_list_json.append(json4music.json4music(music))
     return HttpResponse(json.dumps(play_list_json), content_type='application/json')
@@ -327,6 +329,32 @@ def recommend(request):
     return HttpResponse('method error')
 
 
+def get_similarity_musics(request):
+    """
+    根据歌曲id获取其相似性歌曲
+    :param request: request 请求（GET）
+    :return:
+    """
+    if request.method == 'GET':
+        music_id = request.GET.get('music_id', None)
+        try:
+            music = Music.objects.get(pk=music_id)
+        except Music.DoesNotExist:
+            return HttpResponse('music does not exist, id:', music_id)
+        else:
+
+            total = Music.objects.all().count()
+            music_json = []
+            this_total = Music.objects.filter(artist=music.artist).all().count()
+            for i in range(3):
+                index_i = random.randint(1, this_total)
+                music_json.append(json4music.json4music(Music.objects.filter(artist=music.artist).all()[index_i-1]))
+            for i in range(2):
+                index_i = random.randint(1, total)
+                music_json.append(json4music.json4music(Music.objects.all()[index_i-1]))
+            return HttpResponse(json.dumps(music_json), content_type='application/json')
+
+
 # 音乐专辑搜索
 # param:
 #   search_content:搜索内容
@@ -359,33 +387,54 @@ def get_music_by_genre(request):
     if request.method == 'GET':
         musics = []
         try:
-            # total = Music.objects.filter(artist__icontains='林俊杰').all().count()
-            musics = Music.objects.filter(artist__icontains='林俊杰').all()[25:59]
-            # for i in range(20):
-            #     random_index = random.randint(1, total)
-            #     music = Music.objects.filter(artist__icontains='林俊杰').all()[random_index-1]
-            #     musics.append(music)
+            total = Music.objects.all().count()
+            # musics = Music.objects.filter(artist__icontains='林俊杰').all()[25:59]
+            for i in range(20):
+                random_index = random.randint(1, total)
+                music = Music.objects.all()[random_index-1]
+                musics.append(music)
         except(Music.DoesNotExist, IUser.DoesNotExist):
             return HttpResponse('failed')
         play_list_json = []
-
+        play_list_json.append(json4music.json4music(Music.objects.get(pk=16380)))
+        play_list_json.append(json4music.json4music(Music.objects.get(pk=16383)))
         for music in musics:
-            cover = constant.PROJECT_PATH + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
-            if os.path.exists(cover):
-                cover = constant.URL + '/static/iyinyue/mp3/cover/'+music.artist+'_'+music.song_name+'.jpg'
-            else:
-                cover = constant.URL + '/static/iyinyue/mp3/cover/default.jpg'
-            music_json = {
-                'id': music.id,
-                'title': music.song_name,
-                'artist': music.artist,
-                'mp3': music.path.replace('http://127.0.0.1:8000', constant.URL),
-                'cover': cover
-            }
-            play_list_json.append(music_json)
+            play_list_json.append(json4music.json4music(music))
         return HttpResponse(json.dumps(play_list_json), content_type='application/json')
     return None
 
+
+def get_music_tags(request):
+    """
+
+    :param request:method GET
+    :return:
+    """
+    if request.method == 'GET':
+        music_id = request.GET.get('music_id', None)
+        try:
+            music = Music.objects.get(pk=music_id)
+        except Music.DoesNotExist:
+            # TODO
+            return HttpResponse('faild')
+        tag_arr = []
+        tags = MusicTag.objects.filter(tag_music=music)
+        for tag in tags:
+            tag_arr.append(tag.tag_content)
+        return HttpResponse(json.dumps(tag_arr), content_type='application/json')
+
+
+def get_most(request):
+    if request.method == 'GET':
+        user_name = request.GET.get('user_name')
+        try:
+            user = IUser.objects.get(user_name=user_name)
+        except IUser.DoesNotExist:
+            return HttpResponse(False)
+        else:
+            plist = user.play_list.get(play_list_name='历史记录')
+            ptime = plist.play_time.all().order_by('-add_date')[0]
+            return HttpResponse(ptime.music.artist)
 
 # 获取歌曲评论
 # method GET

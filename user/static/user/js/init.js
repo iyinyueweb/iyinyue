@@ -116,7 +116,3 @@ function getListSong(){
         })
     });
 }
-
-$('#logout').click(function () {
-            alert("1111")
-        });
